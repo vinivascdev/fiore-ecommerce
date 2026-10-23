@@ -1,23 +1,20 @@
-import 'dotenv/config';
-import express, { Request, Response } from 'express';
-import cors from 'cors';
-import usuarioRoutes from './routes/usuarioRoutes';
+import { Router } from 'express';
+import { AuthController } from './controllers/auth.controller';
+import { isAuthenticated, requireRole } from './middlewares/auth.middleware';
+import { TipoUsuario } from '@prisma/client';
 
-const app = express();
-const port = process.env.PORT || 3333;
+const authRoutes = Router();
 
-app.use(cors());
-app.use(express.json());
-app.use(usuarioRoutes);
+authRoutes.post('/login', AuthController.login);
+authRoutes.post('/logout', AuthController.logout);
+authRoutes.get('/me', AuthController.me);
 
-app.get('/health', (_req: Request, res: Response) => {
-  return res.status(200).json({ status: 'ok' });
+authRoutes.get('/cliente-area', isAuthenticated, requireRole(TipoUsuario.CLIENTE), (req, res) => {
+  res.json({ message: 'Bem-vindo à área do cliente!', user: req.session.user });
 });
 
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
-    console.log(`🌸 Servidor Fiore rodando na porta ${port}`);
-  });
-}
+authRoutes.get('/admin-area', isAuthenticated, requireRole(TipoUsuario.ADMIN), (req, res) => {
+  res.json({ message: 'Bem-vindo ao painel administrativo!', user: req.session.user });
+});
 
-export { app };
+export { authRoutes };
