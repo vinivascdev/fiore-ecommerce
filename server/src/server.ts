@@ -1,8 +1,6 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import session from 'express-session';
-import { authRoutes } from './routes/auth.routes';
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -16,6 +14,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use(usuarioRoutes);
 
 // Configuração do middleware de Sessão
 app.use(
