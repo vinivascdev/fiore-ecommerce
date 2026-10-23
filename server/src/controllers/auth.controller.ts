@@ -1,8 +1,59 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { prisma } from '../database/prisma'; 
+import { TipoUsuario } from '@prisma/client';
+import { prisma } from '../database/prisma';
 
 export class AuthController {
+ 
+  static async register(req: Request, res: Response) {
+    try {
+      const { nome, email, login, senha, endereco } = req.body;
+
+      if (!nome || !email || !login || !senha || !endereco) {
+        return res.status(400).json({ message: 'Todos os campos (nome, email, login, senha, endereco) são obrigatórios.' });
+      }
+
+      const usuarioExistente = await prisma.usuario.findFirst({
+        where: {
+          OR: [{ email }, { login }]
+        }
+      });
+
+      if (usuarioExistente) {
+        return res.status(400).json({ message: 'E-mail ou login já está em uso.' });
+      }
+
+     
+      const senhaHashada = await bcrypt.hash(senha, 10);
+
+
+      const novoUsuario = await prisma.usuario.create({
+        data: {
+          nome,
+          email,
+          login,
+          senha: senhaHashada,
+          endereco,
+          tipo_usuario: TipoUsuario.CLIENTE
+        }
+      });
+
+      return res.status(201).json({
+        message: 'Cliente cadastrado com sucesso!',
+        user: {
+          id_usuario: novoUsuario.id_usuario,
+          nome: novoUsuario.nome,
+          email: novoUsuario.email,
+          login: novoUsuario.login,
+          tipo_usuario: novoUsuario.tipo_usuario
+        }
+      });
+    } catch (error) {
+      return res.status(500).json({ message: 'Erro interno no servidor ao cadastrar cliente.' });
+    }
+  }
+
+  
   static async login(req: Request, res: Response) {
     try {
       const { login, senha } = req.body;
@@ -25,7 +76,6 @@ export class AuthController {
       }
 
       const senhaValida = await bcrypt.compare(senha, usuario.senha);
-      
       const senhaValidaTextoPuro = senha === usuario.senha;
 
       if (!senhaValida && !senhaValidaTextoPuro) {
@@ -49,6 +99,7 @@ export class AuthController {
     }
   }
 
+
   static async logout(req: Request, res: Response) {
     req.session.destroy((err) => {
       if (err) {
@@ -58,6 +109,7 @@ export class AuthController {
       return res.json({ message: 'Logout realizado com sucesso.' });
     });
   }
+
 
   static async me(req: Request, res: Response) {
     if (req.session && req.session.user) {
