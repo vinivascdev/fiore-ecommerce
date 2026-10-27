@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import prisma from '../database/prisma';
 import { Usuario } from '../models/Usuario';
 import { TipoUsuario } from '../models/TipoUsuario';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 export class UsuarioController {
   async inserir(req: Request, res: Response) {
