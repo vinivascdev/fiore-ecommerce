@@ -11,6 +11,7 @@ export const Register: React.FC = () => {
     sobrenome: '',
     email: '',
     telefone: '',
+    endereco: '', // Adicionado estado para endereço
     senha: '',
   });
   const [showSenha, setShowSenha] = useState(false);
@@ -36,17 +37,13 @@ export const Register: React.FC = () => {
 
     setLoading(true);
     try {
-      // Adaptação do novo layout ao backend atual:
-      // - nome + sobrenome viram "nome"
-      // - o e-mail é usado como "login"
-      // - "endereco" não existe mais no formulário (vai vazio por enquanto)
       const payload = {
         nome: `${formData.nome} ${formData.sobrenome}`.trim(),
         email: formData.email,
         telefone: formData.telefone,
         login: formData.email,
         senha: formData.senha,
-        endereco: '',
+        endereco: formData.endereco, // Envia o endereço preenchido
       };
 
       const res = await fetch('http://localhost:3333/api/auth/register', {
@@ -56,7 +53,8 @@ export const Register: React.FC = () => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Erro ao realizar o cadastro.');
+      // Trata tanto data.mensagem quanto data.message do backend
+      if (!res.ok) throw new Error(data.mensagem || data.message || 'Erro ao realizar o cadastro.');
 
       setSuccess('Conta criada com sucesso! Redirecionando para o login...');
       setTimeout(() => navigate('/login'), 2000);
@@ -117,6 +115,10 @@ export const Register: React.FC = () => {
 
         <label htmlFor="telefone" className={`${labelClass} mt-5`}>Telefone</label>
         <input id="telefone" name="telefone" type="tel" value={formData.telefone} onChange={handleChange} placeholder="Ex: 85997343140" className={inputClass} required />
+
+        {/* NOVO CAMPO: Endereço */}
+        <label htmlFor="endereco" className={`${labelClass} mt-5`}>Endereço</label>
+        <input id="endereco" name="endereco" type="text" value={formData.endereco} onChange={handleChange} placeholder="Ex: Rua das Flores, 123" className={inputClass} required />
 
         <label htmlFor="senha" className={`${labelClass} mt-5`}>Senha</label>
         <div className="relative">
