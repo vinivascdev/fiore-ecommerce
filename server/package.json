@@ -19,8 +19,11 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.19.3",
+<<<<<<< HEAD
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
+=======
+>>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^18.0.8",
@@ -33,7 +36,11 @@
     "@types/express": "^5.0.6",
     "@types/express-session": "^1.19.0",
     "@types/node": "^26.6.5",
+<<<<<<< HEAD
     "prisma": "^7.10.1",
+=======
+    "prisma": "^6.19.3",
+>>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
     "tsx": "^4.23.15",
     "typescript": "^6.0.3"
   }
