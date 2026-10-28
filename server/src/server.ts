@@ -1,8 +1,10 @@
+
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import session from 'express-session';
 import { authRoutes } from './routes/auth.routes';
+import usuarioRoutes from './routes/usuarioRoutes';
 
 const app = express();
 const port = process.env.PORT || 3333;
@@ -17,7 +19,7 @@ app.use(
 
 app.use(express.json());
 
-// Configuração do middleware de Sessão
+// Configuração do middleware de sessão
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'fiore_perfumes_secreto_super_seguro',
@@ -26,18 +28,21 @@ app.use(
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 2, // 2 horas
+      maxAge: 1000 * 60 * 60 * 2,
     },
   })
 );
 
-// Rota de teste simples
+// Rota de teste
 app.get('/health', (_req: Request, res: Response) => {
   return res.status(200).json({ status: 'ok' });
 });
 
-// Registrar rotas de autenticação
+// Rotas de autenticação
 app.use('/api/auth', authRoutes);
+
+// Rotas de usuários
+app.use('/api', usuarioRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {

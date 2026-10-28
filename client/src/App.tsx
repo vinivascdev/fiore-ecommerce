@@ -6,6 +6,7 @@ import { GuestRoute } from './components/GuestRoute';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Header } from './components/Header';
+import { Perfil } from './pages/Perfil';
 
 // Home demonstrativa
 function HomePage() {
@@ -31,15 +32,7 @@ function HomePage() {
 
 // Área Protegida para Clientes
 function ClientePage() {
-  const { user } = useAuth();
-  return (
-    <div className="flex-1 flex items-center justify-center p-6 bg-stone-50">
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-md border border-stone-200 text-center">
-        <h2 className="text-2xl font-serif font-bold text-stone-900 mb-2">Área do Cliente</h2>
-        <p className="text-sm text-stone-600">Bem-vindo(a), {user?.nome}!</p>
-      </div>
-    </div>
-  );
+  return <Perfil />;
 }
 
 // Área Protegida para Administradores
