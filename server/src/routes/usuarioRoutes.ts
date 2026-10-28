@@ -1,18 +1,11 @@
-<<<<<<< HEAD
 import { Router } from "express";
 import { UsuarioController } from "../controllers/UsuarioController";
 import { isAuthenticated, requireRole } from "../middlewares/auth.middleware";
 import { TipoUsuario } from "@prisma/client";
-=======
-
-import { Router } from 'express';
-import { UsuarioController } from '../controllers/UsuarioController';
->>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
 
 const usuarioRoutes = Router();
 const usuarioController = new UsuarioController();
 
-<<<<<<< HEAD
 // Cadastro de usuário
 usuarioRoutes.post("/usuarios", (req, res) => {
   return usuarioController.inserir(req, res);
@@ -48,10 +41,4 @@ usuarioRoutes.delete(
   },
 );
 
-=======
-usuarioRoutes.post('/usuarios', (req, res) => {
-  return usuarioController.inserir(req, res);
-});
-
->>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
 export default usuarioRoutes;

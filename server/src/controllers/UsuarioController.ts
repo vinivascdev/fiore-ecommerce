@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Request, Response } from "express";
 import prisma from "../database/prisma";
 import { Usuario } from "../models/Usuario";
@@ -7,26 +6,13 @@ import * as bcrypt from "bcrypt";
 
 export class UsuarioController {
   // Cadastrar um novo usuário
-=======
-import { Request, Response } from 'express';
-import prisma from '../database/prisma';
-import { Usuario } from '../models/Usuario';
-import { TipoUsuario } from '../models/TipoUsuario';
-import * as bcrypt from 'bcrypt';
-
-export class UsuarioController {
->>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
   async inserir(req: Request, res: Response) {
     try {
       const { nome, endereco, email, login, senha } = req.body;
 
       if (!nome || !endereco || !email || !login || !senha) {
         return res.status(400).json({
-<<<<<<< HEAD
           mensagem: "Preencha todos os campos do cadastro.",
-=======
-          mensagem: 'Preencha todos os campos do cadastro.',
->>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
         });
       }
 
@@ -36,11 +22,7 @@ export class UsuarioController {
 
       if (emailExistente) {
         return res.status(409).json({
-<<<<<<< HEAD
           mensagem: "Este e-mail já está cadastrado.",
-=======
-          mensagem: 'Este e-mail já está cadastrado.',
->>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
         });
       }
 
@@ -50,11 +32,7 @@ export class UsuarioController {
 
       if (loginExistente) {
         return res.status(409).json({
-<<<<<<< HEAD
           mensagem: "Este login já está cadastrado.",
-=======
-          mensagem: 'Este login já está cadastrado.',
->>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
         });
       }
 
@@ -66,11 +44,7 @@ export class UsuarioController {
         login,
         senhaHash,
         endereco,
-<<<<<<< HEAD
         TipoUsuario.CLIENTE,
-=======
-        TipoUsuario.CLIENTE
->>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
       );
 
       const usuarioSalvo = await prisma.usuario.create({
@@ -78,7 +52,6 @@ export class UsuarioController {
       });
 
       return res.status(201).json({
-<<<<<<< HEAD
         mensagem: "Usuário cadastrado com sucesso!",
         usuario: Usuario.fromPersistence(usuarioSalvo).toJSON(),
       });
@@ -336,16 +309,6 @@ export class UsuarioController {
       return res.status(500).json({
         mensagem:
           "Não foi possível excluir a conta. Verifique se há pedidos vinculados.",
-=======
-        mensagem: 'Usuário cadastrado com sucesso!',
-        usuario: Usuario.fromPersistence(usuarioSalvo).toJSON(),
-      });
-    } catch (erro) {
-      console.error('Erro ao cadastrar usuário:', erro);
-
-      return res.status(500).json({
-        mensagem: 'Erro interno ao processar o cadastro.',
->>>>>>> 51074f578359a0731a004169b3f7649b633f7cc3
       });
     }
   }
