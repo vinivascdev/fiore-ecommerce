@@ -42,8 +42,13 @@ export const AdminDashboard: React.FC = () => {
       {/* 4 Cards Superiores */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
-          <div className="w-11 h-11 rounded-full bg-[#FFD6F0] text-[#DD0088] flex items-center justify-center text-lg font-bold mb-3">
-            $
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#FFD6F0]">
+            <img
+              src="/icons/receita.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-15 w- 15"
+            />
           </div>
           <p className="text-xs font-medium text-stone-600">Receita Total</p>
           <p className="text-2xl font-bold text-stone-950 mt-1">
@@ -52,24 +57,39 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
-          <div className="w-11 h-11 rounded-full bg-[#FFD6F0] text-[#DD0088] flex items-center justify-center text-lg mb-3">
-            👤
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#FFD6F0]">
+            <img
+              src="/icons/cliente.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-15 w- 15"
+            />
           </div>
           <p className="text-xs font-medium text-stone-600">Clientes</p>
           <p className="text-2xl font-bold text-stone-950 mt-1">{dados.totalClientes ?? 0}</p>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
-          <div className="w-11 h-11 rounded-full bg-[#FFD6F0] text-[#DD0088] flex items-center justify-center text-lg mb-3">
-            🏷️
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#FFD6F0]">
+            <img
+              src="/icons/categorias.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-15 w- 15"
+            />
           </div>
           <p className="text-xs font-medium text-stone-600">Categorias</p>
           <p className="text-2xl font-bold text-stone-950 mt-1">{dados.totalCategorias ?? 0}</p>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
-          <div className="w-11 h-11 rounded-full bg-[#FFD6F0] text-[#DD0088] flex items-center justify-center text-lg mb-3">
-            ⚠️
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#FFD6F0]">
+            <img
+              src="/icons/estoque.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-15 w- 15"
+            />
           </div>
           <p className="text-xs font-medium text-stone-600">Sem Estoque</p>
           <p className="text-2xl font-bold text-stone-950 mt-1">{dados.semEstoqueCount ?? 0}</p>

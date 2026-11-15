@@ -63,12 +63,16 @@ export const AdminRelatorios: React.FC = () => {
         <button
           type="button"
           onClick={() => setTipo('compras-por-cliente')}
-          className={`text-left bg-white p-5 rounded-2xl border-2 transition ${
-            tipo === 'compras-por-cliente' ? 'border-[#DD0088]' : 'border-stone-200'
-          }`}
+          className={`text-left bg-white p-5 rounded-2xl border-2 transition ${tipo === 'compras-por-cliente' ? 'border-[#DD0088]' : 'border-stone-200'
+            }`}
         >
-          <div className="w-11 h-11 rounded-full bg-[#FFD6F0] text-[#DD0088] flex items-center justify-center mb-3">
-            👤
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#FFD6F0]">
+            <img
+              src="/icons/cliente.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-15 w- 15"
+            />
           </div>
           <p className="font-bold text-sm text-stone-900">Compras por clientes</p>
           <p className="text-xs text-stone-500 mt-1">
@@ -79,12 +83,16 @@ export const AdminRelatorios: React.FC = () => {
         <button
           type="button"
           onClick={() => setTipo('receita-por-dia')}
-          className={`text-left bg-white p-5 rounded-2xl border-2 transition ${
-            tipo === 'receita-por-dia' ? 'border-[#DD0088]' : 'border-stone-200'
-          }`}
+          className={`text-left bg-white p-5 rounded-2xl border-2 transition ${tipo === 'receita-por-dia' ? 'border-[#DD0088]' : 'border-stone-200'
+            }`}
         >
-          <div className="w-11 h-11 rounded-full bg-[#FFD6F0] text-[#DD0088] flex items-center justify-center mb-3 font-bold">
-            $
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#FFD6F0]">
+            <img
+              src="/icons/receita.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-15 w- 15"
+            />
           </div>
           <p className="font-bold text-sm text-stone-900">Receita por dia</p>
           <p className="text-xs text-stone-500 mt-1">
@@ -95,12 +103,16 @@ export const AdminRelatorios: React.FC = () => {
         <button
           type="button"
           onClick={() => setTipo('produtos-em-falta')}
-          className={`text-left bg-white p-5 rounded-2xl border-2 transition ${
-            tipo === 'produtos-em-falta' ? 'border-[#DD0088]' : 'border-stone-200'
-          }`}
+          className={`text-left bg-white p-5 rounded-2xl border-2 transition ${tipo === 'produtos-em-falta' ? 'border-[#DD0088]' : 'border-stone-200'
+            }`}
         >
-          <div className="w-11 h-11 rounded-full bg-[#FFD6F0] text-[#DD0088] flex items-center justify-center mb-3">
-            ⚠️
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-[#FFD6F0]">
+            <img
+              src="/icons/estoque.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-15 w- 15"
+            />
           </div>
           <p className="font-bold text-sm text-stone-900">Produtos em falta</p>
           <p className="text-xs text-stone-500 mt-1">
@@ -141,11 +153,10 @@ export const AdminRelatorios: React.FC = () => {
                   key={fmt}
                   type="button"
                   onClick={() => setFormato(fmt)}
-                  className={`h-10 px-5 rounded-full text-xs font-bold border ${
-                    formato === fmt
+                  className={`h-10 px-5 rounded-full text-xs font-bold border ${formato === fmt
                       ? 'border-[#DD0088] text-[#DD0088] bg-pink-50/50'
                       : 'border-stone-300 text-stone-600'
-                  }`}
+                    }`}
                 >
                   {fmt}
                 </button>
@@ -156,9 +167,15 @@ export const AdminRelatorios: React.FC = () => {
           <button
             type="button"
             onClick={exportarRelatorio}
-            className="h-10 px-6 rounded-full bg-[#DD0088] hover:bg-[#C4007A] text-white text-xs font-bold transition ml-auto"
+            className="ml-auto inline-flex h-10 items-center gap-2 rounded-full bg-[#DD0088] px-6 text-xs font-bold text-white transition hover:bg-[#C4007A]"
           >
-            ⬇ Emitir Relatório
+            <img
+              src="/icons/download.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-4 w-4"
+            />
+            Emitir Relatório
           </button>
         </div>
       </div>

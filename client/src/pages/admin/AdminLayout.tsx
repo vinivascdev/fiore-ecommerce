@@ -40,7 +40,13 @@ export const AdminLayout: React.FC = () => {
                 Geral
               </p>
               <NavLink to="/admin" end className={linkClass}>
-                <span>⊞</span> Dashboard
+                  <img
+                src="/icons/dashboard.svg"
+                alt=""
+                aria-hidden="true"
+                className="h-4 w-4"
+                  />
+            Dashboard
               </NavLink>
             </div>
 
@@ -50,13 +56,28 @@ export const AdminLayout: React.FC = () => {
               </p>
               <div className="space-y-1">
                 <NavLink to="/admin/produtos" className={linkClass}>
-                  <span>📦</span> Produtos
+                 <img
+                src="/icons/produtos.svg"
+                alt=""
+                aria-hidden="true"
+                className="h-4 w-4"
+                  /> Produtos
                 </NavLink>
                 <NavLink to="/admin/categorias" className={linkClass}>
-                  <span>🏷️</span> Categorias
+                 <img
+                src="/icons/categoriaTag.svg"
+                alt=""
+                aria-hidden="true"
+                className="h-4 w-4"
+                  /> Categorias
                 </NavLink>
                 <NavLink to="/admin/pedidos" className={linkClass}>
-                  <span>📄</span> Pedidos
+                  <img
+                src="/icons/pedido.svg"
+                alt=""
+                aria-hidden="true"
+                className="h-4 w-4"
+                  /> Pedidos
                 </NavLink>
               </div>
             </div>
@@ -67,13 +88,28 @@ export const AdminLayout: React.FC = () => {
               </p>
               <div className="space-y-1">
                 <NavLink to="/admin/usuarios" className={linkClass}>
-                  <span>👥</span> Usuários
+                  <img
+                src="/icons/usuarios.svg"
+                alt=""
+                aria-hidden="true"
+                className="h-4 w-4"
+                  /> Usuários
                 </NavLink>
                 <NavLink to="/admin/relatorios" className={linkClass}>
-                  <span>📈</span> Relatórios
+                 <img
+                src="/icons/relatorios.svg"
+                alt=""
+                aria-hidden="true"
+                className="h-4 w-4"
+                  /> Relatórios
                 </NavLink>
                 <NavLink to="/admin/perfil" className={linkClass}>
-                  <span>⚙️</span> Meus Dados
+                  <img
+                src="/icons/settings.svg"
+                alt=""
+                aria-hidden="true"
+                className="h-4 w-4"
+                  />Meus Dados
                 </NavLink>
               </div>
             </div>
@@ -97,7 +133,12 @@ export const AdminLayout: React.FC = () => {
             title="Sair"
             className="p-2 text-stone-700 hover:text-[#DD0088] transition"
           >
-            ↪
+            <img
+      src="/icons/sair.svg"
+      alt=""
+      aria-hidden="true"
+      className="h-5 w-5"
+  />
           </button>
         </div>
       </aside>
@@ -110,7 +151,15 @@ export const AdminLayout: React.FC = () => {
             aria-label="Notificações"
             className="w-10 h-10 rounded-full border border-[#DD0088] flex items-center justify-center text-stone-800 hover:bg-pink-50 transition"
           >
-            🔔
+
+                  <img
+            src="/icons/notificacao.svg"
+            alt=""
+            aria-hidden="true"
+            className="h-5 w-5"
+          />  
+
+            
           </button>
         </header>
 
