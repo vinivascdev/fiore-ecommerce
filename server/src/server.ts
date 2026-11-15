@@ -5,6 +5,7 @@ import session from 'express-session';
 import { authRoutes } from './routes/auth.routes';
 import usuarioRoutes from './routes/usuarioRoutes';
 import { adminRoutes } from './routes/admin.routes';
+import { pedidoRoutes } from './routes/pedido.routes';
 import { prisma } from './database/prisma';
 
 const app = express();
@@ -55,6 +56,7 @@ app.use('/api/auth', authRoutes);
 
 // Rotas de usuários
 app.use('/api', usuarioRoutes);
+app.use('/api/pedidos', pedidoRoutes);
 
 // Rotas do Painel Administrativo
 app.use('/api/admin', adminRoutes);

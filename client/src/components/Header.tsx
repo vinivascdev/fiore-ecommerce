@@ -1,12 +1,11 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
-// TODO: trocar por contador real do carrinho (contexto/estado global)
-const CART_COUNT = 0;
+import { useCarrinho } from '../context/CarrinhoContext';
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuth();
+  const { quantidadeItens } = useCarrinho();
   const navigate = useNavigate();
 
   const isAdmin = user?.tipo_usuario === 'ADMIN';
@@ -103,19 +102,19 @@ export const Header: React.FC = () => {
 
             <span className="hidden sm:block w-px h-8 bg-stone-200" />
 
-            <button type="button" className="relative flex items-center gap-2 text-stone-900 font-medium hover:text-[#DD0088] transition-colors">
+            <Link to="/carrinho" className="relative flex items-center gap-2 text-stone-900 font-medium hover:text-[#DD0088] transition-colors">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <circle cx="9" cy="20" r="1.3" />
                 <circle cx="18" cy="20" r="1.3" />
                 <path d="M2 3h3l2.5 12h11L21 7H6" />
               </svg>
               Carrinho
-              {CART_COUNT > 0 && (
+              {quantidadeItens > 0 && (
                 <span className="absolute -top-2 left-3 min-w-[16px] h-4 px-1 rounded-full bg-[#DD0088] text-white text-[10px] leading-4 text-center">
-                  {CART_COUNT}
+                  {quantidadeItens}
                 </span>
               )}
-            </button>
+            </Link>
           </nav>
         </div>
       </div>
