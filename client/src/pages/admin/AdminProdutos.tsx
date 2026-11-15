@@ -105,9 +105,16 @@ export const AdminProdutos: React.FC = () => {
         </div>
         <button
           onClick={() => abrirModal()}
-          className="bg-[#DD0088] hover:bg-[#C4007A] text-white text-xs font-bold px-5 py-3 rounded-full transition"
+          className="inline-flex items-center gap-2 rounded-full bg-[#DD0088] px-5 py-3 text-xs font-bold text-white transition hover:bg-[#C4007A]"
         >
-          + Novo Produto
+          <img
+            src="/icons/plus.svg"
+            alt=""
+            aria-hidden="true"
+            className="h-4 w-4"
+          />
+          
+          Novo Produto
         </button>
       </div>
 
@@ -121,13 +128,20 @@ export const AdminProdutos: React.FC = () => {
             onChange={(e) => setBusca(e.target.value)}
             className="w-full h-11 pl-10 pr-4 rounded-full border border-[#DD0088] bg-white text-xs focus:outline-none"
           />
-          <span className="absolute left-4 top-3 text-stone-500 text-sm">🔍</span>
+            <div className="absolute left-4 top-3 text-stone-500 text-sm">
+            <img
+              src="/icons/search.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-5 w- 5"
+            />
+          </div>
         </div>
 
         <select
           value={filtroCategoria}
           onChange={(e) => setFiltroCategoria(e.target.value)}
-          className="h-11 px-4 rounded-full border border-[#DD0088] bg-white text-xs font-medium text-stone-800 focus:outline-none"
+          className="h-11 px-6 rounded-full border border-[#DD0088] bg-white text-xs font-medium text-stone-800 focus:outline-none"
         >
           <option value="">Todas as categorias</option>
           {categorias.map((c) => (

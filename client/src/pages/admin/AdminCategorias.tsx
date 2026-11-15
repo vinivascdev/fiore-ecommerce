@@ -62,9 +62,15 @@ export const AdminCategorias: React.FC = () => {
         </div>
         <button
           onClick={() => abrirModal()}
-          className="bg-[#DD0088] hover:bg-[#C4007A] text-white text-xs font-bold px-5 py-3 rounded-full transition"
+          className="inline-flex items-center gap-2 rounded-full bg-[#DD0088] px-5 py-3 text-xs font-bold text-white transition hover:bg-[#C4007A]"
         >
-          + Nova Categoria
+          <img
+            src="/icons/plus.svg"
+            alt=""
+            aria-hidden="true"
+            className="h-4 w-4"
+          />
+          Nova Categoria
         </button>
       </div>
 
@@ -72,12 +78,18 @@ export const AdminCategorias: React.FC = () => {
         <div className="flex-1 relative">
           <input
             type="text"
-            placeholder="Buscar categoria"
+            placeholder="Buscar por nome ou descrição"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            className="w-full h-11 pl-10 pr-4 rounded-full border border-[#DD0088] bg-white text-xs focus:outline-none"
-          />
-          <span className="absolute left-4 top-3 text-stone-500 text-sm">🔍</span>
+            className="w-full h-11 pl-10 pr-4 rounded-full border border-[#DD0088] bg-white text-xs focus:outline-none" />
+          <div className="absolute left-4 top-3 text-stone-500 text-sm">
+            <img
+              src="/icons/search.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-5 w- 5"
+            />
+          </div>
         </div>
         <span className="text-xs text-stone-500">{filtradas.length} Categorias</span>
       </div>

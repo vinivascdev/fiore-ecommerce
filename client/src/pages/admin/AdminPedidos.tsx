@@ -49,7 +49,14 @@ export const AdminPedidos: React.FC = () => {
           onChange={(e) => setBusca(e.target.value)}
           className="w-full h-11 pl-10 pr-4 rounded-full border border-[#DD0088] bg-white text-xs focus:outline-none"
         />
-        <span className="absolute left-4 top-3 text-stone-500 text-sm">🔍</span>
+          <div className="absolute left-4 top-3 text-stone-500 text-sm">
+            <img
+              src="/icons/search.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-5 w- 5"
+            />
+          </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
