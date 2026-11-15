@@ -12,7 +12,7 @@ export interface UserSession {
 interface AuthContextType {
   user: UserSession | null;
   loading: boolean;
-  login: (email: string, senha: string) => Promise<void>;
+  login: (email: string, senha: string) => Promise<UserSession>;
   logout: () => Promise<void>;
 }
 
@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .finally(() => setLoading(false));
   }, []);
 
-  const login = async (email: string, senha: string) => {
+  const login = async (email: string, senha: string): Promise<UserSession> => {
     try {
       const response = await fetch('http://localhost:3333/api/auth/login', {
         method: 'POST',
@@ -49,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       setUser(data.user);
+      return data.user;
     } catch (err: any) {
       if (err.message === 'Failed to fetch') {
         throw new Error('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
@@ -56,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw err;
     }
   };
-
+  
   const logout = async () => {
     await fetch('http://localhost:3333/api/auth/logout', {
       method: 'POST',

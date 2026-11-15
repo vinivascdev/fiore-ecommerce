@@ -56,6 +56,7 @@ model Pedido {
   id_cliente  Int
   data_pedido DateTime     @default(now())
   valor_total Decimal      @db.Decimal(10, 2)
+  status      String       @default("Não Enviado")
 
   cliente     Usuario      @relation(fields: [id_cliente], references: [id_usuario])
   itens       ItemPedido[]

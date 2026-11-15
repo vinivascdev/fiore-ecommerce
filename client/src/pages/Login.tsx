@@ -19,18 +19,18 @@ export const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      await login(loginInput, senhaInput);
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  e.preventDefault();
+  setError('');
+  setLoading(true);
+  try {
+    const usuarioLogado = await login(loginInput, senhaInput);
+    navigate(usuarioLogado.tipo_usuario === 'ADMIN' ? '/admin' : '/');
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex-1 grid md:grid-cols-2 bg-white">

@@ -27,7 +27,7 @@ function normalizar(origem: Partial<DadosPerfil> | undefined): DadosPerfil {
   let nome = origem?.nome ?? '';
   let sobrenome = origem?.sobrenome ?? '';
 
-  // Se o sobrenome vier vazio e o nome completo vier junto do cadastro, separa automaticamente
+  // Separa nome e sobrenome automaticamente caso venham juntos do cadastro
   if (!sobrenome && nome.includes(' ')) {
     const partes = nome.trim().split(' ');
     nome = partes[0];
@@ -87,7 +87,11 @@ const senhaVazia: DadosSenha = {
   confirmarSenha: '',
 };
 
-export function Perfil() {
+interface PerfilProps {
+  modoAdmin?: boolean;
+}
+
+export function Perfil({ modoAdmin = false }: PerfilProps) {
   const { user, logout } = useAuth() as ReturnType<typeof useAuth> & {
     logout?: () => void;
   };
@@ -191,7 +195,9 @@ export function Perfil() {
         );
       }
 
-      setMensagem(resultado.mensagem || resultado.message || 'Dados atualizados com sucesso!');
+      setMensagem(
+        resultado.mensagem || resultado.message || 'Dados atualizados com sucesso!'
+      );
     } catch (erroRecebido) {
       setErro(true);
       setMensagem(
@@ -247,7 +253,9 @@ export function Perfil() {
         );
       }
 
-      setMensagemSenha(resultado.mensagem || resultado.message || 'Senha alterada com sucesso!');
+      setMensagemSenha(
+        resultado.mensagem || resultado.message || 'Senha alterada com sucesso!'
+      );
       setSenha(senhaVazia);
     } catch (erroRecebido) {
       setErroSenha(true);
@@ -295,8 +303,14 @@ export function Perfil() {
 
   if (carregando) {
     return (
-      <div className="flex h-screen flex-1 items-center justify-center bg-[#F5F5F5] p-8">
-        <p className="text-sm text-stone-500">Carregando seu perfil...</p>
+      <div
+        className={
+          modoAdmin
+            ? 'p-8 text-sm text-stone-500'
+            : 'flex h-screen flex-1 items-center justify-center bg-[#F5F5F5] p-8'
+        }
+      >
+        <p className="text-sm text-stone-500">Carregando seus dados...</p>
       </div>
     );
   }
@@ -335,111 +349,137 @@ export function Perfil() {
     }`;
 
   return (
-    <div className="flex h-screen flex-1 overflow-hidden bg-[#F5F5F5]">
-      {/* Sidebar */}
-      <aside className="hidden w-[180px] shrink-0 flex-col justify-between border-r border-stone-200 bg-white md:flex">
-        <div className="px-4 pt-6">
-          <button
-            type="button"
-            onClick={() => window.history.back()}
-            className="flex items-center gap-1.5 text-xs font-medium text-[#E6007E] hover:opacity-80"
-          >
-            <span aria-hidden>←</span> Voltar
-          </button>
-
-          <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase text-black">
-            <svg
-              className="h-4 w-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <circle cx="12" cy="10" r="3" />
-              <path d="M6.17 18.5a7 7 0 0 1 11.66 0" />
-            </svg>
-            Minha conta
-          </div>
-
-          <nav className="-mx-2 mt-3 flex flex-col gap-1">
+    <div
+      className={
+        modoAdmin
+          ? 'w-full'
+          : 'flex h-screen flex-1 overflow-hidden bg-[#F5F5F5]'
+      }
+    >
+      {/* Sidebar exibida apenas na área do Cliente */}
+      {!modoAdmin && (
+        <aside className="hidden w-[180px] shrink-0 flex-col justify-between border-r border-stone-200 bg-white md:flex">
+          <div className="px-4 pt-6">
             <button
               type="button"
-              onClick={() => setAba('dados')}
-              aria-current={aba === 'dados' ? 'page' : undefined}
-              className={itemMenu(aba === 'dados')}
+              onClick={() => window.history.back()}
+              className="flex items-center gap-1.5 text-xs font-medium text-[#E6007E] hover:opacity-80"
             >
-              Dados Pessoais
+              <span aria-hidden>←</span> Voltar
             </button>
-            <button
-              type="button"
-              onClick={() => setAba('pedidos')}
-              aria-current={aba === 'pedidos' ? 'page' : undefined}
-              className={itemMenu(aba === 'pedidos')}
-            >
-              Meus Pedidos
-            </button>
-          </nav>
-        </div>
 
-        <div className="flex items-center justify-between px-3 pb-3">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FFB8DE] text-base font-medium text-black">
-              {inicial}
-            </span>
-            <span className="text-xs font-bold text-black">
-              {nomeExibido.split(' ')[0]}
-            </span>
+            <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase text-black">
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="10" r="3" />
+                <path d="M6.17 18.5a7 7 0 0 1 11.66 0" />
+              </svg>
+              Minha conta
+            </div>
+
+            <nav className="-mx-2 mt-3 flex flex-col gap-1">
+              <button
+                type="button"
+                onClick={() => setAba('dados')}
+                aria-current={aba === 'dados' ? 'page' : undefined}
+                className={itemMenu(aba === 'dados')}
+              >
+                Dados Pessoais
+              </button>
+              <button
+                type="button"
+                onClick={() => setAba('pedidos')}
+                aria-current={aba === 'pedidos' ? 'page' : undefined}
+                className={itemMenu(aba === 'pedidos')}
+              >
+                Meus Pedidos
+              </button>
+            </nav>
           </div>
 
-          <button
-            type="button"
-            onClick={() => logout?.()}
-            aria-label="Sair"
-            className="text-black hover:opacity-70"
-          >
-            <svg
-              className="h-4 w-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="flex items-center justify-between px-3 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FFB8DE] text-base font-medium text-black">
+                {inicial}
+              </span>
+              <span className="text-xs font-bold text-black">
+                {nomeExibido.split(' ')[0]}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => logout?.()}
+              aria-label="Sair"
+              className="text-black hover:opacity-70"
             >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <path d="M16 17l5-5-5-5" />
-              <path d="M21 12H9" />
-            </svg>
-          </button>
-        </div>
-      </aside>
+              <svg
+                className="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <path d="M16 17l5-5-5-5" />
+                <path d="M21 12H9" />
+              </svg>
+            </button>
+          </div>
+        </aside>
+      )}
 
       {/* Conteúdo */}
-      <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6">
-        {aba === 'dados' ? (
-          <div className="mx-auto max-w-3xl">
+      <main
+        className={
+          modoAdmin
+            ? 'max-w-3xl'
+            : 'flex-1 overflow-y-auto px-4 py-4 sm:px-6'
+        }
+      >
+        {aba === 'dados' || modoAdmin ? (
+          <div className={modoAdmin ? '' : 'mx-auto max-w-3xl'}>
             <form onSubmit={salvarPerfil}>
               {/* Título */}
-              <div className="mb-3">
-                <h1 className="text-base font-semibold text-black">
-                  Dados Pessoais
+              <div className="mb-4">
+                <h1
+                  className={
+                    modoAdmin
+                      ? 'text-3xl font-bold text-stone-950'
+                      : 'text-base font-semibold text-black'
+                  }
+                >
+                  {modoAdmin ? 'Meus Dados' : 'Dados Pessoais'}
                 </h1>
-                <p className="text-xs text-stone-500">
+                <p
+                  className={
+                    modoAdmin
+                      ? 'mt-1 text-sm text-stone-600'
+                      : 'text-xs text-stone-500'
+                  }
+                >
                   Mantenha suas informações atualizadas.
                 </p>
               </div>
 
               {/* Card: Sobre */}
-              <section className="rounded-2xl border border-stone-300 px-5 py-4">
+              <section className="rounded-2xl border border-stone-300 bg-white px-5 py-4">
                 <h2 className="mb-3 text-sm font-medium text-black">Sobre</h2>
                 {renderCampos(camposSobre)}
               </section>
 
               {/* Card: Endereço */}
-              <section className="mt-3 rounded-2xl border border-stone-300 px-5 py-4">
+              <section className="mt-3 rounded-2xl border border-stone-300 bg-white px-5 py-4">
                 <h2 className="mb-3 text-sm font-medium text-black">
                   Endereço
                 </h2>
@@ -485,7 +525,7 @@ export function Perfil() {
             {/* Card: Alterar senha */}
             <form
               onSubmit={alterarSenha}
-              className="mb-2 mt-6 rounded-2xl border border-stone-300 px-5 py-4"
+              className="mb-2 mt-6 rounded-2xl border border-stone-300 bg-white px-5 py-4"
             >
               <h2 className="mb-3 text-sm font-medium text-black">
                 Alterar senha
@@ -574,7 +614,7 @@ export function Perfil() {
               Meus Pedidos
             </h1>
 
-            <section className="flex flex-col items-center justify-center rounded-2xl border border-stone-300 px-5 py-14 text-center">
+            <section className="flex flex-col items-center justify-center rounded-2xl border border-stone-300 bg-white px-5 py-14 text-center">
               <svg
                 className="h-10 w-10 text-[#E6007E]/60"
                 viewBox="0 0 24 24"

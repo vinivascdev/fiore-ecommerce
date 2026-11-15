@@ -9,12 +9,11 @@ export const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Ajuste o nome do campo se no seu AuthContext não for "role"
-  const isAdmin = (user as any)?.role === 'ADMIN';
+  const isAdmin = user?.tipo_usuario === 'ADMIN';
   const primeiroNome = user?.nome?.split(' ')[0];
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
@@ -59,29 +58,35 @@ export const Header: React.FC = () => {
               <>
                 <Link
                   to={isAdmin ? '/admin' : '/minha-conta'}
-                  className="flex items-center gap-2 text-stone-900 font-medium"
+                  className="flex items-center gap-2 text-stone-900 font-medium hover:text-[#DD0088] transition-colors"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                     <circle cx="12" cy="8" r="4" />
                     <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
                   </svg>
-                  Olá, {primeiroNome}
-                  <span className="hidden sm:inline text-[11px] font-normal text-stone-400">
-                    {isAdmin ? '(Painel)' : '(Minha conta)'}
-                  </span>
+                  <span>Olá, {primeiroNome}</span>
+                  {isAdmin ? (
+                    <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFD6F0] text-[#DD0088]">
+                      Admin
+                    </span>
+                  ) : (
+                    <span className="hidden sm:inline text-[11px] font-normal text-stone-400">
+                      (Minha conta)
+                    </span>
+                  )}
                 </Link>
 
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="px-4 py-2 rounded-md bg-[#FFF0F7] text-[#DD0088] font-semibold"
+                  className="px-4 py-2 rounded-md bg-[#FFF0F7] text-[#DD0088] font-semibold hover:bg-[#FFD6F0] transition-colors"
                 >
                   Sair
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="flex items-center gap-2 text-stone-900 font-medium">
+                <Link to="/login" className="flex items-center gap-2 text-stone-900 font-medium hover:text-[#DD0088] transition-colors">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                     <circle cx="12" cy="8" r="4" />
                     <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
@@ -90,7 +95,7 @@ export const Header: React.FC = () => {
                   <span className="hidden sm:inline text-[11px] font-normal text-stone-400">(Cliente/Painel)</span>
                 </Link>
 
-                <Link to="/cadastro" className="px-4 py-2 rounded-md bg-[#FFF0F7] text-[#DD0088] font-semibold">
+                <Link to="/cadastro" className="px-4 py-2 rounded-md bg-[#FFF0F7] text-[#DD0088] font-semibold hover:bg-[#FFD6F0] transition-colors">
                   Cadastre-se
                 </Link>
               </>
@@ -98,7 +103,7 @@ export const Header: React.FC = () => {
 
             <span className="hidden sm:block w-px h-8 bg-stone-200" />
 
-            <button type="button" className="relative flex items-center gap-2 text-stone-900 font-medium">
+            <button type="button" className="relative flex items-center gap-2 text-stone-900 font-medium hover:text-[#DD0088] transition-colors">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <circle cx="9" cy="20" r="1.3" />
                 <circle cx="18" cy="20" r="1.3" />
