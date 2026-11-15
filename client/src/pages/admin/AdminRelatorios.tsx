@@ -8,17 +8,48 @@ export const AdminRelatorios: React.FC = () => {
   const [dataFim, setDataFim] = useState('2026-12-31');
   const [formato, setFormato] = useState<'HTML' | 'TXT'>('HTML');
   const [dados, setDados] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState(false);
+  const [erro, setErro] = useState('');
 
-  const carregarRelatorio = async () => {
-    const params = new URLSearchParams({ tipo, dataInicio, dataFim });
-    const res = await fetch(`http://localhost:3333/api/admin/relatorios?${params}`, {
-      credentials: 'include',
-    });
-    if (res.ok) setDados(await res.json());
+  const selecionarTipo = (novoTipo: TipoRelatorio) => {
+    setDados([]);
+    setErro('');
+    setTipo(novoTipo);
   };
 
   useEffect(() => {
-    carregarRelatorio();
+    const controller = new AbortController();
+    let ativo = true;
+    const params = new URLSearchParams({ tipo, dataInicio, dataFim });
+
+    setDados([]);
+    setErro('');
+    setCarregando(true);
+
+    fetch(`http://localhost:3333/api/admin/relatorios?${params}`, {
+      credentials: 'include',
+      signal: controller.signal,
+    })
+      .then(async (res) => {
+        const resultado = await res.json().catch(() => []);
+        if (!res.ok) throw new Error(resultado.message || 'Não foi possível carregar o relatório.');
+        return resultado;
+      })
+      .then((resultado) => {
+        if (ativo) setDados(Array.isArray(resultado) ? resultado : []);
+      })
+      .catch((erroRecebido) => {
+        if (!ativo || (erroRecebido instanceof DOMException && erroRecebido.name === 'AbortError')) return;
+        setErro(erroRecebido instanceof Error ? erroRecebido.message : 'Erro ao carregar o relatório.');
+      })
+      .finally(() => {
+        if (ativo) setCarregando(false);
+      });
+
+    return () => {
+      ativo = false;
+      controller.abort();
+    };
   }, [tipo, dataInicio, dataFim]);
 
   const exportarRelatorio = () => {
@@ -30,9 +61,9 @@ export const AdminRelatorios: React.FC = () => {
     let conteudo = `RELATÓRIO GERENCIAL FIORE - ${tipo.toUpperCase()}\nPeríodo: ${dataInicio} a ${dataFim}\n----------------------------------------\n`;
     dados.forEach((item, idx) => {
       if (tipo === 'compras-por-cliente') {
-        conteudo += `#${idx + 1} ${item.nome} - ${item.totalPedidos} pedidos (R$ ${item.valorTotal.toFixed(2)})\n`;
+        conteudo += `#${idx + 1} ${item.nome} - ${item.totalPedidos} pedidos (R$ ${Number(item.valorTotal ?? 0).toFixed(2)})\n`;
       } else if (tipo === 'receita-por-dia') {
-        conteudo += `${item.data}: R$ ${item.total.toFixed(2)}\n`;
+        conteudo += `${item.data}: R$ ${Number(item.total ?? 0).toFixed(2)}\n`;
       } else {
         conteudo += `#${idx + 1} ${item.nome} (${item.categoria?.nome}) - Valor: R$ ${item.preco} - ESGOTADO\n`;
       }
@@ -47,7 +78,7 @@ export const AdminRelatorios: React.FC = () => {
   };
 
   const maxReceita =
-    tipo === 'receita-por-dia' ? Math.max(...dados.map((d) => d.total || 0), 1) : 1;
+    tipo === 'receita-por-dia' ? Math.max(...dados.map((d) => Number(d.total) || 0), 1) : 1;
 
   return (
     <div className="max-w-6xl space-y-6">
@@ -62,7 +93,7 @@ export const AdminRelatorios: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <button
           type="button"
-          onClick={() => setTipo('compras-por-cliente')}
+          onClick={() => selecionarTipo('compras-por-cliente')}
           className={`text-left bg-white p-5 rounded-2xl border-2 transition ${tipo === 'compras-por-cliente' ? 'border-[#DD0088]' : 'border-stone-200'
             }`}
         >
@@ -82,7 +113,7 @@ export const AdminRelatorios: React.FC = () => {
 
         <button
           type="button"
-          onClick={() => setTipo('receita-por-dia')}
+          onClick={() => selecionarTipo('receita-por-dia')}
           className={`text-left bg-white p-5 rounded-2xl border-2 transition ${tipo === 'receita-por-dia' ? 'border-[#DD0088]' : 'border-stone-200'
             }`}
         >
@@ -102,7 +133,7 @@ export const AdminRelatorios: React.FC = () => {
 
         <button
           type="button"
-          onClick={() => setTipo('produtos-em-falta')}
+          onClick={() => selecionarTipo('produtos-em-falta')}
           className={`text-left bg-white p-5 rounded-2xl border-2 transition ${tipo === 'produtos-em-falta' ? 'border-[#DD0088]' : 'border-stone-200'
             }`}
         >
@@ -123,7 +154,13 @@ export const AdminRelatorios: React.FC = () => {
 
       {/* Parâmetros do Relatório */}
       <div className="bg-white rounded-2xl border border-stone-200 p-6">
-        <h2 className="text-xs font-bold text-stone-900 mb-4">⚙️ Parâmetros do Relatório</h2>
+        <h2 className="ml-auto inline-flex text-xs font-bold text-stone-900 mb-4"> 
+          <img
+              src="/icons/settings.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-4 w-4"
+            />  Parâmetros do Relatório</h2>
         <div className="flex flex-wrap items-end gap-4">
           <div>
             <label className="block text-[11px] font-bold mb-1">Data Inicial</label>
@@ -194,12 +231,14 @@ export const AdminRelatorios: React.FC = () => {
         </div>
 
         <div className="divide-y divide-stone-100">
+          {carregando && <p className="p-8 text-center text-xs text-stone-400">Carregando relatório...</p>}
+          {erro && <p role="alert" className="p-8 text-center text-xs text-red-600">{erro}</p>}
           {tipo === 'compras-por-cliente' &&
             dados.map((item, idx) => (
               <div key={item.id} className="px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#FFD6F0] text-[#DD0088] font-bold text-xs flex items-center justify-center">
-                    {item.nome.charAt(0)}
+                    {item.nome?.charAt(0) || '?'}
                   </div>
                   <div>
                     <p className="text-sm font-bold text-stone-900">{item.nome}</p>
@@ -213,7 +252,7 @@ export const AdminRelatorios: React.FC = () => {
           {tipo === 'receita-por-dia' &&
             dados.map((item) => (
               <div key={item.data} className="px-6 py-4 flex items-center gap-6">
-                <span className="text-xs font-bold text-stone-900 w-24">{item.data}</span>
+                <span className="text-xs font-bold text-stone-900 w-24">{item.data || '—'}</span>
                 <div className="flex-1 h-2 bg-stone-100 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-[#FF8AD4] rounded-full"
@@ -221,7 +260,7 @@ export const AdminRelatorios: React.FC = () => {
                   />
                 </div>
                 <span className="text-xs font-bold text-[#DD0088] w-24 text-right">
-                  {item.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  {Number(item.total ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </span>
               </div>
             ))}
@@ -236,7 +275,7 @@ export const AdminRelatorios: React.FC = () => {
                     <p className="text-xs text-stone-400">{prod.descricao_olfativa}</p>
                   </div>
                 </div>
-                <span className="text-xs text-stone-600">{prod.categoria?.nome}</span>
+                <span className="text-xs text-stone-600">{prod.categoria?.nome || 'Sem categoria'}</span>
                 <span className="text-xs font-semibold text-stone-800">
                   Valor: {Number(prod.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                 </span>
@@ -244,7 +283,7 @@ export const AdminRelatorios: React.FC = () => {
               </div>
             ))}
 
-          {dados.length === 0 && (
+          {!carregando && !erro && dados.length === 0 && (
             <p className="p-8 text-center text-xs text-stone-400">
               Nenhum registro encontrado para os filtros selecionados.
             </p>
