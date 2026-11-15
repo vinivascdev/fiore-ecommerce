@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 // Salve a foto dos perfumes em: public/images/perfumes-login.jpg
 const LOGIN_IMAGE = '/images/perfumes-login.jpg';
@@ -17,6 +17,7 @@ export const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -24,7 +25,8 @@ export const Login: React.FC = () => {
   setLoading(true);
   try {
     const usuarioLogado = await login(loginInput, senhaInput);
-    navigate(usuarioLogado.tipo_usuario === 'ADMIN' ? '/admin' : '/');
+    const destinoCliente = (location.state as { from?: string } | null)?.from || '/';
+    navigate(usuarioLogado.tipo_usuario === 'ADMIN' ? '/admin' : destinoCliente);
   } catch (err: any) {
     setError(err.message);
   } finally {

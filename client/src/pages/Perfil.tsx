@@ -113,6 +113,9 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
   const [erroExclusao, setErroExclusao] = useState('');
+  const [pedidos, setPedidos] = useState<any[]>([]);
+  const [carregandoPedidos, setCarregandoPedidos] = useState(false);
+  const [erroPedidos, setErroPedidos] = useState('');
 
   useEffect(() => {
     async function carregarPerfil() {
@@ -144,6 +147,29 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
 
     carregarPerfil();
   }, [user]);
+
+  useEffect(() => {
+    if (modoAdmin || aba !== 'pedidos') return;
+    let ativo = true;
+    setCarregandoPedidos(true);
+    setErroPedidos('');
+    fetch('http://localhost:3333/api/pedidos/me', { credentials: 'include' })
+      .then(async (resposta) => {
+        const resultado = await resposta.json().catch(() => []);
+        if (!resposta.ok) throw new Error(resultado.message || 'Não foi possível carregar seus pedidos.');
+        return resultado;
+      })
+      .then((resultado) => {
+        if (ativo) setPedidos(Array.isArray(resultado) ? resultado : []);
+      })
+      .catch((erroRecebido) => {
+        if (ativo) setErroPedidos(erroRecebido instanceof Error ? erroRecebido.message : 'Erro ao carregar pedidos.');
+      })
+      .finally(() => {
+        if (ativo) setCarregandoPedidos(false);
+      });
+    return () => { ativo = false; };
+  }, [aba, modoAdmin]);
 
   useEffect(() => {
     if (!confirmandoExclusao) return;
@@ -614,27 +640,43 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
               Meus Pedidos
             </h1>
 
-            <section className="flex flex-col items-center justify-center rounded-2xl border border-stone-300 bg-white px-5 py-14 text-center">
-              <svg
-                className="h-10 w-10 text-[#E6007E]/60"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
-                <path d="M3 6h18" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-              <p className="mt-3 text-sm font-medium text-black">
-                Você ainda não fez nenhum pedido
-              </p>
-              <p className="mt-1 text-xs text-stone-500">
-                Quando você comprar, seus pedidos aparecerão aqui.
-              </p>
-            </section>
+            {carregandoPedidos ? (
+              <p className="rounded-2xl border border-stone-300 bg-white p-8 text-center text-sm text-stone-500">Carregando seus pedidos...</p>
+            ) : erroPedidos ? (
+              <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">{erroPedidos}</p>
+            ) : pedidos.length === 0 ? (
+              <section className="flex flex-col items-center justify-center rounded-2xl border border-stone-300 bg-white px-5 py-14 text-center">
+                <svg className="h-10 w-10 text-[#E6007E]/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                  <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
+                </svg>
+                <p className="mt-3 text-sm font-medium text-black">Você ainda não fez nenhum pedido</p>
+                <p className="mt-1 text-xs text-stone-500">Quando você comprar, seus pedidos aparecerão aqui.</p>
+              </section>
+            ) : (
+              <div className="space-y-4">
+                {pedidos.map((pedido) => (
+                  <article key={pedido.id_pedido} className="rounded-2xl border border-stone-300 bg-white p-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3">
+                      <p className="text-sm font-semibold text-stone-900">Pedido #{pedido.id_pedido}</p>
+                      <span className="text-xs text-stone-500">{new Date(pedido.data_pedido).toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div className="divide-y divide-stone-100">
+                      {pedido.itens.map((item: any) => (
+                        <div key={item.id_item_pedido} className="flex justify-between gap-4 py-3 text-xs">
+                          <span className="text-stone-700">{item.quantidade} × {item.produto?.nome}</span>
+                          <span className="font-medium">{(Number(item.preco_unitario) * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-2 flex justify-between border-t border-stone-100 pt-3 text-sm">
+                      <span className="text-stone-600">Status: {pedido.status}</span>
+                      <strong className="text-[#DD0088]">{Number(pedido.valor_total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>

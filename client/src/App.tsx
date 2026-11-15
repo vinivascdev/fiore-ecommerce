@@ -18,10 +18,13 @@ import { AdminPedidos } from './pages/admin/AdminPedidos';
 import { AdminPedidoDetalhes } from './pages/admin/AdminPedidoDetalhes';
 import { AdminUsuarios } from './pages/admin/AdminUsuarios';
 import { AdminRelatorios } from './pages/admin/AdminRelatorios';
+import { Carrinho } from './pages/Carrinho';
+import { CarrinhoProvider, useCarrinho } from './context/CarrinhoContext';
 
 function HomePage() {
   const [produtos, setProdutos] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const { adicionar } = useCarrinho();
 
   useEffect(() => {
     fetch('http://localhost:3333/api/produtos')
@@ -99,9 +102,12 @@ function HomePage() {
                     <button
                       type="button"
                       disabled={esgotado}
+                      onClick={() => {
+                        if (!adicionar(prod)) window.alert('Não há mais unidades disponíveis deste produto no estoque.');
+                      }}
                       className="px-4 py-2 rounded-full bg-[#DD0088] hover:bg-[#C4007A] text-white text-xs font-semibold transition disabled:bg-stone-300 disabled:cursor-not-allowed"
                     >
-                      {esgotado ? 'Esgotado' : 'Comprar'}
+                      {esgotado ? 'Esgotado' : 'Adicionar ao carrinho'}
                     </button>
                   </div>
                 </div>
@@ -121,6 +127,7 @@ function ClientePage() {
 export default function App() {
   return (
     <AuthProvider>
+      <CarrinhoProvider>
       <BrowserRouter>
         <Routes>
           {/* Área Exclusiva do Administrador (usa AdminLayout com Sidebar própria) */}
@@ -153,6 +160,7 @@ export default function App() {
                 <main className="flex-1 flex flex-col">
                   <Routes>
                     <Route path="/" element={<HomePage />} />
+                    <Route path="/carrinho" element={<Carrinho />} />
 
                     <Route
                       path="/login"
@@ -194,6 +202,7 @@ export default function App() {
           />
         </Routes>
       </BrowserRouter>
+      </CarrinhoProvider>
     </AuthProvider>
   );
 }
