@@ -70,13 +70,13 @@ export const Login: React.FC = () => {
             </div>
           )}
 
-          <label htmlFor="login" className="block text-xs text-stone-800 mb-2 ml-4">Login</label>
+          <label htmlFor="login" className="block text-xs text-stone-800 mb-2 ml-4">E-mail</label>
           <input
             id="login"
-            type="text"
+            type="email"
             value={loginInput}
             onChange={(e) => setLoginInput(e.target.value)}
-            placeholder="E-mail ou Telefone"
+            placeholder="Digite o seu e-mail"
             className={inputClass}
             required
           />

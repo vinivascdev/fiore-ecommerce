@@ -6,14 +6,13 @@ export interface UserSession {
   id_usuario: number;
   nome: string;
   email: string;
-  login: string;
   tipo_usuario: TipoUsuario;
 }
 
 interface AuthContextType {
   user: UserSession | null;
   loading: boolean;
-  login: (loginInput: string, senhaInput: string) => Promise<void>;
+  login: (email: string, senha: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -23,7 +22,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserSession | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Revalida a sessão no backend ao carregar ou atualizar a página (F5)
   useEffect(() => {
     fetch('http://localhost:3333/api/auth/me', { credentials: 'include' })
       .then((res) => res.json())
@@ -36,20 +34,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .finally(() => setLoading(false));
   }, []);
 
-  const login = async (loginInput: string, senhaInput: string) => {
-    const response = await fetch('http://localhost:3333/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ login: loginInput, senha: senhaInput }),
-      credentials: 'include', // Envia e recebe cookies HTTP-only
-    });
+  const login = async (email: string, senha: string) => {
+    try {
+      const response = await fetch('http://localhost:3333/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha }),
+        credentials: 'include',
+      });
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'Erro ao realizar login.');
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'E-mail ou senha inválidos.');
+      }
+
+      setUser(data.user);
+    } catch (err: any) {
+      if (err.message === 'Failed to fetch') {
+        throw new Error('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
+      }
+      throw err;
     }
-
-    setUser(data.user);
   };
 
   const logout = async () => {

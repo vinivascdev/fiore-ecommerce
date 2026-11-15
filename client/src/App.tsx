@@ -1,14 +1,13 @@
-// import React from 'react'; 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { GuestRoute } from './components/GuestRoute';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { RecuperarSenha } from './pages/RecuperarSenha';
 import { Header } from './components/Header';
 import { Perfil } from './pages/Perfil';
 
-// Home demonstrativa
 function HomePage() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-amber-50/50 via-stone-50 to-pink-50/30">
@@ -30,12 +29,10 @@ function HomePage() {
   );
 }
 
-// Área Protegida para Clientes
 function ClientePage() {
   return <Perfil />;
 }
 
-// Área Protegida para Administradores
 function AdminPage() {
   return (
     <div className="flex-1 flex items-center justify-center p-6 bg-stone-900">
@@ -55,14 +52,12 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <div className="min-h-screen flex flex-col font-sans bg-white">
-           <Header />
-          
-          {/* Rotas e Conteúdo */}
+          <Header />
+
           <main className="flex-1 flex flex-col">
             <Routes>
               <Route path="/" element={<HomePage />} />
-              
-              {/* Rotas exclusivas para visitantes (não logados) */}
+
               <Route
                 path="/login"
                 element={
@@ -79,8 +74,15 @@ export default function App() {
                   </GuestRoute>
                 }
               />
+              <Route
+                path="/recuperar-senha"
+                element={
+                  <GuestRoute>
+                    <RecuperarSenha />
+                  </GuestRoute>
+                }
+              />
 
-              {/* Rota Protegida Exclusiva para Cliente */}
               <Route
                 path="/minha-conta"
                 element={
@@ -90,7 +92,6 @@ export default function App() {
                 }
               />
 
-              {/* Rota Protegida Exclusiva para Admin */}
               <Route
                 path="/admin"
                 element={

@@ -5,7 +5,6 @@ interface DadosPerfil {
   nome: string;
   sobrenome: string;
   email: string;
-  login: string; // não aparece na tela, mas continua sendo enviado ao salvar
   cpf: string;
   genero: string;
   telefone: string;
@@ -17,7 +16,6 @@ const dadosVazios: DadosPerfil = {
   nome: '',
   sobrenome: '',
   email: '',
-  login: '',
   cpf: '',
   genero: '',
   telefone: '',
@@ -26,11 +24,20 @@ const dadosVazios: DadosPerfil = {
 };
 
 function normalizar(origem: Partial<DadosPerfil> | undefined): DadosPerfil {
+  let nome = origem?.nome ?? '';
+  let sobrenome = origem?.sobrenome ?? '';
+
+  // Se o sobrenome vier vazio e o nome completo vier junto do cadastro, separa automaticamente
+  if (!sobrenome && nome.includes(' ')) {
+    const partes = nome.trim().split(' ');
+    nome = partes[0];
+    sobrenome = partes.slice(1).join(' ');
+  }
+
   return {
-    nome: origem?.nome ?? '',
-    sobrenome: origem?.sobrenome ?? '',
+    nome,
+    sobrenome,
     email: origem?.email ?? '',
-    login: origem?.login ?? '',
     cpf: origem?.cpf ?? '',
     genero: origem?.genero ?? '',
     telefone: origem?.telefone ?? '',
@@ -81,7 +88,6 @@ const senhaVazia: DadosSenha = {
 };
 
 export function Perfil() {
-  // Ajuste "logout" para o nome que existe no seu AuthContext
   const { user, logout } = useAuth() as ReturnType<typeof useAuth> & {
     logout?: () => void;
   };
@@ -116,15 +122,14 @@ export function Perfil() {
         }
 
         const resultado = await resposta.json();
-        const usuario = resultado.usuario ?? resultado.user;
+        const usuario = resultado.usuario ?? resultado.user ?? resultado;
 
-        if (usuario) {
+        if (usuario && usuario.email) {
           setDados(normalizar(usuario));
         } else if (user) {
           setDados(normalizar(user as Partial<DadosPerfil>));
         }
       } catch {
-        // Usa os dados da sessão caso a rota de consulta ainda não exista.
         if (user) {
           setDados(normalizar(user as Partial<DadosPerfil>));
         }
@@ -136,7 +141,6 @@ export function Perfil() {
     carregarPerfil();
   }, [user]);
 
-  // Fecha o modal de exclusão com a tecla Esc
   useEffect(() => {
     if (!confirmandoExclusao) return;
 
@@ -165,11 +169,16 @@ export function Perfil() {
     setSalvando(true);
 
     try {
+      const payload = {
+        ...dados,
+        nomeCompleto: `${dados.nome} ${dados.sobrenome}`.trim(),
+      };
+
       const resposta = await fetch('http://localhost:3333/api/usuarios/me', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(dados),
+        body: JSON.stringify(payload),
       });
 
       const resultado = await resposta.json();
@@ -182,7 +191,7 @@ export function Perfil() {
         );
       }
 
-      setMensagem(resultado.mensagem || 'Dados atualizados com sucesso!');
+      setMensagem(resultado.mensagem || resultado.message || 'Dados atualizados com sucesso!');
     } catch (erroRecebido) {
       setErro(true);
       setMensagem(
@@ -238,7 +247,7 @@ export function Perfil() {
         );
       }
 
-      setMensagemSenha(resultado.mensagem || 'Senha alterada com sucesso!');
+      setMensagemSenha(resultado.mensagem || resultado.message || 'Senha alterada com sucesso!');
       setSenha(senhaVazia);
     } catch (erroRecebido) {
       setErroSenha(true);
@@ -326,8 +335,6 @@ export function Perfil() {
     }`;
 
   return (
-    // Se existir um header/navbar acima desta página, troque h-screen por
-    // h-[calc(100vh-ALTURA_DO_HEADER)] para não gerar rolagem na página.
     <div className="flex h-screen flex-1 overflow-hidden bg-[#F5F5F5]">
       {/* Sidebar */}
       <aside className="hidden w-[180px] shrink-0 flex-col justify-between border-r border-stone-200 bg-white md:flex">

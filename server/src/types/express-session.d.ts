@@ -7,7 +7,6 @@ declare module 'express-session' {
       id_usuario: number;
       nome: string;
       email: string;
-      login: string;
       tipo_usuario: TipoUsuario;
     };
   }

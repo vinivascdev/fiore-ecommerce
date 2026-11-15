@@ -35,13 +35,17 @@ export const Register: React.FC = () => {
       return;
     }
 
+    if (formData.senha.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
     setLoading(true);
     try {
       const payload = {
         nome: `${formData.nome} ${formData.sobrenome}`.trim(),
         email: formData.email,
         telefone: formData.telefone,
-        login: formData.email,
         senha: formData.senha,
         endereco: formData.endereco, // Envia o endereço preenchido
       };
@@ -59,7 +63,11 @@ export const Register: React.FC = () => {
       setSuccess('Conta criada com sucesso! Redirecionando para o login...');
       setTimeout(() => navigate('/login'), 2000);
     } catch (err: any) {
-      setError(err.message);
+      if (err.message === 'Failed to fetch') {
+        setError('Não foi possível conectar ao servidor. Verifique se o backend está ativo.');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }

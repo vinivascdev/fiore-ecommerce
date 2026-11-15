@@ -7,9 +7,10 @@ const authRoutes = Router();
 
 authRoutes.post('/register', AuthController.register);
 authRoutes.post('/login', AuthController.login);
+authRoutes.post('/forgot-password', AuthController.forgotPassword);
+authRoutes.post('/reset-password', AuthController.resetPassword);
 authRoutes.post('/logout', AuthController.logout);
 authRoutes.get('/me', AuthController.me);
-
 
 authRoutes.get('/cliente-area', isAuthenticated, requireRole(TipoUsuario.CLIENTE), (req, res) => {
   res.json({ message: 'Bem-vindo à área do cliente!', user: req.session.user });

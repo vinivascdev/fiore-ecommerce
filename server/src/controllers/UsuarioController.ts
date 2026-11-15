@@ -1,23 +1,24 @@
 import { Request, Response } from "express";
+import { TipoUsuario } from "@prisma/client";
 import prisma from "../database/prisma";
-import { Usuario } from "../models/Usuario";
-import { TipoUsuario } from "../models/TipoUsuario";
-import * as bcrypt from "bcrypt";
+import * as bcrypt from "bcryptjs";
 
 export class UsuarioController {
   // Cadastrar um novo usuário
   async inserir(req: Request, res: Response) {
     try {
-      const { nome, endereco, email, login, senha } = req.body;
+      const { nome, endereco, email, telefone, senha } = req.body;
 
-      if (!nome || !endereco || !email || !login || !senha) {
+      if (!nome || !endereco || !email || !senha) {
         return res.status(400).json({
-          mensagem: "Preencha todos os campos do cadastro.",
+          mensagem: "Preencha todos os campos obrigatórios do cadastro.",
         });
       }
 
+      const emailNormalizado = email.trim().toLowerCase();
+
       const emailExistente = await prisma.usuario.findUnique({
-        where: { email },
+        where: { email: emailNormalizado },
       });
 
       if (emailExistente) {
@@ -26,34 +27,30 @@ export class UsuarioController {
         });
       }
 
-      const loginExistente = await prisma.usuario.findUnique({
-        where: { login },
-      });
-
-      if (loginExistente) {
-        return res.status(409).json({
-          mensagem: "Este login já está cadastrado.",
-        });
-      }
-
       const senhaHash = await bcrypt.hash(senha, 10);
 
-      const usuario = new Usuario(
-        nome,
-        email,
-        login,
-        senhaHash,
-        endereco,
-        TipoUsuario.CLIENTE,
-      );
-
       const usuarioSalvo = await prisma.usuario.create({
-        data: usuario.toPersistence(),
+        data: {
+          nome: nome.trim(),
+          email: emailNormalizado,
+          telefone: telefone?.trim() || null,
+          senha: senhaHash,
+          endereco: endereco.trim(),
+          tipo_usuario: TipoUsuario.CLIENTE,
+        },
+        select: {
+          id_usuario: true,
+          nome: true,
+          email: true,
+          telefone: true,
+          endereco: true,
+          tipo_usuario: true,
+        },
       });
 
       return res.status(201).json({
         mensagem: "Usuário cadastrado com sucesso!",
-        usuario: Usuario.fromPersistence(usuarioSalvo).toJSON(),
+        usuario: usuarioSalvo,
       });
     } catch (erro) {
       console.error("Erro ao cadastrar usuário:", erro);
@@ -76,14 +73,12 @@ export class UsuarioController {
       }
 
       const usuario = await prisma.usuario.findUnique({
-        where: {
-          id_usuario: usuarioSessao.id_usuario,
-        },
+        where: { id_usuario: usuarioSessao.id_usuario },
         select: {
           id_usuario: true,
           nome: true,
           email: true,
-          login: true,
+          telefone: true,
           endereco: true,
           tipo_usuario: true,
         },
@@ -118,35 +113,32 @@ export class UsuarioController {
         });
       }
 
-      const { nome, endereco, email, login } = req.body;
+      const { nome, sobrenome, nomeCompleto, endereco, email, telefone } = req.body;
 
-      // Validar os campos obrigatórios
+      // Monta o nome completo caso o frontend envie nome e sobrenome separados
+      const nomeFinal =
+        typeof nomeCompleto === "string" && nomeCompleto.trim()
+          ? nomeCompleto.trim()
+          : `${nome ?? ""} ${sobrenome ?? ""}`.trim();
+
       if (
-        typeof nome !== "string" ||
-        !nome.trim() ||
+        !nomeFinal ||
         typeof endereco !== "string" ||
         !endereco.trim() ||
         typeof email !== "string" ||
-        !email.trim() ||
-        typeof login !== "string" ||
-        !login.trim()
+        !email.trim()
       ) {
         return res.status(400).json({
-          mensagem: "Preencha todos os campos obrigatórios.",
+          mensagem: "Preencha todos os campos obrigatórios (nome, e-mail e endereço).",
         });
       }
 
-      const dados = {
-        nome: nome.trim(),
-        endereco: endereco.trim(),
-        email: email.trim(),
-        login: login.trim(),
-      };
+      const emailNormalizado = email.trim().toLowerCase();
 
       // Verificar se o e-mail pertence a outro usuário
       const emailExistente = await prisma.usuario.findFirst({
         where: {
-          email: dados.email,
+          email: emailNormalizado,
           NOT: {
             id_usuario: usuarioSessao.id_usuario,
           },
@@ -155,46 +147,36 @@ export class UsuarioController {
 
       if (emailExistente) {
         return res.status(409).json({
-          mensagem: "Este e-mail já está cadastrado.",
+          mensagem: "Este e-mail já está cadastrado em outra conta.",
         });
       }
 
-      // Verificar se o login pertence a outro usuário
-      const loginExistente = await prisma.usuario.findFirst({
-        where: {
-          login: dados.login,
-          NOT: {
-            id_usuario: usuarioSessao.id_usuario,
-          },
-        },
-      });
-
-      if (loginExistente) {
-        return res.status(409).json({
-          mensagem: "Este login já está cadastrado.",
-        });
-      }
-
-      // Atualizar somente o usuário da sessão
       const usuarioAtualizado = await prisma.usuario.update({
         where: {
           id_usuario: usuarioSessao.id_usuario,
         },
-        data: dados,
+        data: {
+          nome: nomeFinal,
+          email: emailNormalizado,
+          telefone: typeof telefone === "string" && telefone.trim() ? telefone.trim() : null,
+          endereco: endereco.trim(),
+        },
         select: {
           id_usuario: true,
           nome: true,
-          endereco: true,
           email: true,
-          login: true,
+          telefone: true,
+          endereco: true,
           tipo_usuario: true,
         },
       });
 
-      // Atualizar os dados do usuário na sessão
+      // Atualiza os dados da sessão
       req.session.user = {
-        ...req.session.user,
-        ...usuarioAtualizado,
+        id_usuario: usuarioAtualizado.id_usuario,
+        nome: usuarioAtualizado.nome,
+        email: usuarioAtualizado.email,
+        tipo_usuario: usuarioAtualizado.tipo_usuario,
       };
 
       return res.status(200).json({
@@ -245,7 +227,6 @@ export class UsuarioController {
         });
       }
 
-      // Aceita hash e, como no login, senhas antigas salvas em texto puro
       const senhaValida =
         (await bcrypt.compare(senhaAtual, usuario.senha)) ||
         senhaAtual === usuario.senha;
