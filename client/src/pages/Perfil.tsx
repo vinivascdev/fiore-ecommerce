@@ -216,8 +216,8 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
       if (!resposta.ok) {
         throw new Error(
           resultado.mensagem ||
-            resultado.message ||
-            'Não foi possível salvar as alterações.'
+          resultado.message ||
+          'Não foi possível salvar as alterações.'
         );
       }
 
@@ -274,8 +274,8 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
       if (!resposta.ok) {
         throw new Error(
           resultado.mensagem ||
-            resultado.message ||
-            'Não foi possível alterar a senha.'
+          resultado.message ||
+          'Não foi possível alterar a senha.'
         );
       }
 
@@ -309,8 +309,8 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
         const resultado = await resposta.json().catch(() => ({}));
         throw new Error(
           resultado.mensagem ||
-            resultado.message ||
-            'Não foi possível excluir a conta.'
+          resultado.message ||
+          'Não foi possível excluir a conta.'
         );
       }
 
@@ -370,8 +370,7 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
   }
 
   const itemMenu = (ativo: boolean) =>
-    `w-full rounded-full px-3.5 py-2 text-left text-sm text-[#4A0F3D] transition ${
-      ativo ? 'bg-[#FFB8DE]' : 'hover:bg-pink-50'
+    `w-full rounded-full px-3.5 py-2 text-left text-sm text-[#4A0F3D] transition ${ativo ? 'bg-[#FFB8DE]' : 'hover:bg-pink-50'
     }`;
 
   return (
@@ -515,11 +514,10 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
               {mensagem && (
                 <div
                   role="status"
-                  className={`mt-3 rounded-xl px-4 py-2 text-xs ${
-                    erro
+                  className={`mt-3 rounded-xl px-4 py-2 text-xs ${erro
                       ? 'bg-red-50 text-red-700'
                       : 'bg-green-50 text-green-700'
-                  }`}
+                    }`}
                 >
                   {mensagem}
                 </div>
@@ -613,11 +611,10 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
               {mensagemSenha && (
                 <div
                   role="status"
-                  className={`mt-3 rounded-xl px-4 py-2 text-xs ${
-                    erroSenha
+                  className={`mt-3 rounded-xl px-4 py-2 text-xs ${erroSenha
                       ? 'bg-red-50 text-red-700'
                       : 'bg-green-50 text-green-700'
-                  }`}
+                    }`}
                 >
                   {mensagemSenha}
                 </div>
@@ -655,26 +652,90 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
               </section>
             ) : (
               <div className="space-y-4">
-                {pedidos.map((pedido) => (
-                  <article key={pedido.id_pedido} className="rounded-2xl border border-stone-300 bg-white p-5">
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3">
-                      <p className="text-sm font-semibold text-stone-900">Pedido #{pedido.id_pedido}</p>
-                      <span className="text-xs text-stone-500">{new Date(pedido.data_pedido).toLocaleString('pt-BR')}</span>
-                    </div>
-                    <div className="divide-y divide-stone-100">
-                      {pedido.itens.map((item: any) => (
-                        <div key={item.id_item_pedido} className="flex justify-between gap-4 py-3 text-xs">
-                          <span className="text-stone-700">{item.quantidade} × {item.produto?.nome}</span>
-                          <span className="font-medium">{(Number(item.preco_unitario) * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                {pedidos.map((pedido) => {
+                  const status = String(pedido.status || '').toLowerCase();
+
+                  const estiloStatus =
+                    status === 'pendente'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : status === 'enviado'
+                        ? 'bg-green-100 text-green-800'
+                        : status === 'cancelado'
+                          ? 'bg-red-100 text-red-700'
+                          : 'bg-stone-100 text-stone-700';
+
+                  return (
+                    <article
+                      key={pedido.id_pedido}
+                      className="overflow-hidden rounded-2xl border border-stone-300 bg-white"
+                    >
+                      {/* Cabeçalho do pedido */}
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 px-5 py-4">
+                        <p className="text-sm font-semibold text-stone-900">
+                          Pedido #{pedido.id_pedido}
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="text-xs text-stone-500">
+                            {new Date(pedido.data_pedido).toLocaleString('pt-BR')}
+                          </span>
+
+                          <span
+                            className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase ${estiloStatus}`}
+                          >
+                            {pedido.status}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-                    <div className="mt-2 flex justify-between border-t border-stone-100 pt-3 text-sm">
-                      <span className="text-stone-600">Status: {pedido.status}</span>
-                      <strong className="text-[#DD0088]">{Number(pedido.valor_total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
-                    </div>
-                  </article>
-                ))}
+                      </div>
+
+                      {/* Lista de produtos */}
+                      <div className="divide-y divide-stone-100 px-5">
+                        {pedido.itens.map((item: any) => (
+                          <div
+                            key={item.id_item_pedido}
+                            className="flex items-center gap-3 py-4"
+                          >
+                            <img
+                              src={item.produto?.imagem_url || '/placeholder.png'}
+                              alt={item.produto?.nome || 'Produto'}
+                              className="h-16 w-16 shrink-0 rounded-xl border border-stone-100 bg-stone-50 object-contain"
+                            />
+
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-medium text-stone-900">
+                                {item.produto?.nome || 'Produto'}
+                              </p>
+                              <p className="mt-1 text-[11px] text-stone-500">
+                                Quantidade: {item.quantidade}
+                              </p>
+                            </div>
+
+                            <span className="shrink-0 text-xs font-semibold text-stone-800">
+                              {(Number(item.preco_unitario) * item.quantidade).toLocaleString(
+                                'pt-BR',
+                                { style: 'currency', currency: 'BRL' }
+                              )}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Faixa do total */}
+                      <div className="flex items-center justify-between bg-[#FFF0F7] px-5 py-4">
+                        <span className="text-xs font-semibold text-stone-700">
+                          Total do pedido
+                        </span>
+
+                        <strong className="text-sm font-bold text-[#DD0088]">
+                          {Number(pedido.valor_total).toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </strong>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             )}
           </div>
