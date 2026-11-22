@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 export const AdminLayout: React.FC = () => {
@@ -25,6 +25,32 @@ export const AdminLayout: React.FC = () => {
       {/* Sidebar Esquerda */}
       <aside className="w-60 bg-white border-r border-stone-200 flex flex-col justify-between shrink-0">
         <div>
+          
+          <div>
+          {/* Link para a Home */}
+          <div className="px-6 pt-4">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#DD0088] hover:text-[#C4007A] transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="4 4 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="h-4 w-4"
+              >
+                <path d="M19 12H5" />
+                <path d="M12 19l-7-7 7-7" />
+              </svg>
+              Início
+            </Link>
+          </div>
+
           {/* Logo Fiore */}
           <div className="px-6 py-5 border-b border-stone-200">
             <div className="flex items-center gap-2 text-xl font-bold text-stone-950">
@@ -114,8 +140,8 @@ export const AdminLayout: React.FC = () => {
               </div>
             </div>
           </nav>
+          </div>
         </div>
-
         {/* Rodapé Admin */}
         <div className="p-4 border-t border-stone-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5 overflow-hidden">
