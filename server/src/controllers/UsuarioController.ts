@@ -267,6 +267,16 @@ export class UsuarioController {
         });
       }
 
+      const pedidosVinculados = await prisma.pedido.count({
+        where: { id_cliente: usuarioSessao.id_usuario },
+      });
+
+      if (pedidosVinculados > 0) {
+        return res.status(400).json({
+          mensagem: "Não é possível excluir a conta pois existem pedidos vinculados ao seu cadastro.",
+        });
+      }
+
       await prisma.usuario.delete({
         where: { id_usuario: usuarioSessao.id_usuario },
       });
@@ -289,7 +299,7 @@ export class UsuarioController {
 
       return res.status(500).json({
         mensagem:
-          "Não foi possível excluir a conta. Verifique se há pedidos vinculados.",
+          "Não foi possível excluir a conta. Tente novamente mais tarde.",
       });
     }
   }

@@ -2,6 +2,10 @@
 node_modules/
 .pnpm-store/
 
+# Uploads
+/server/uploads/*
+!/server/uploads/.gitkeep
+
 # Environment Variables
 .env
 .env.local
@@ -12,6 +16,7 @@ node_modules/
 dist/
 build/
 out/
+*.tsbuildinfo
 
 # Logs
 logs/

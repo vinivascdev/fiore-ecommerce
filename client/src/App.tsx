@@ -8,6 +8,7 @@ import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { Header } from "./components/Header";
 import { Perfil } from "./pages/Perfil";
 import { useEffect, useRef, useState } from "react";
+import { formatImageUrl } from "./utils/image";
 
 // Telas do Painel Administrativo
 import { AdminLayout } from "./pages/admin/AdminLayout";
@@ -50,6 +51,9 @@ function HomePage() {
       })
       .finally(() => setCarregando(false));
   }, []);
+
+  // Garante a exibição estrita apenas de produtos disponíveis em estoque (quantidade > 0)
+  const produtosEmEstoque = produtos.filter((p) => Number(p.quantidade_estoque) > 0);
 
   return (
     <div className="flex-1 bg-gradient-to-b from-[#FFF5FA] via-white to-stone-50">
@@ -104,9 +108,9 @@ function HomePage() {
           />
 
           {/* Perfume em destaque */}
-          {produtos[0]?.imagem_url && (
+          {produtosEmEstoque[0]?.imagem_url && (
             <img
-              src={produtos[0].imagem_url}
+              src={formatImageUrl(produtosEmEstoque[0].imagem_url)}
               alt="Perfume em destaque"
               className="absolute z-10 inset-0 w-full h-full object-contain p-5 md:p-8 drop-shadow-xl"
             />
@@ -123,8 +127,7 @@ function HomePage() {
           </h2>
 
           <p className="text-sm text-slate-500 mt-1">
-            Confira as novidades selecionadas para você com estoque garantido e
-            entrega rápida.
+            Confira as novidades com estoque garantido a pronta entrega.
           </p>
         </div>
 
@@ -133,15 +136,18 @@ function HomePage() {
           <p className="text-center text-sm text-stone-500">
             Carregando fragrâncias...
           </p>
-        ) : produtos.length === 0 ? (
-          <p className="text-center text-sm text-stone-500 py-12">
-            Nenhum perfume cadastrado no catálogo ainda.
-          </p>
+        ) : produtosEmEstoque.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border border-stone-200 p-8 max-w-md mx-auto">
+            <p className="text-base font-bold text-stone-800">
+              Nenhum perfume disponível em estoque no momento.
+            </p>
+            <p className="text-xs text-stone-500 mt-1">
+              Volte em breve para conferir novas reposições do nosso catálogo de luxo.
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {produtos.map((prod) => {
-              const esgotado = prod.quantidade_estoque <= 0;
-
+            {produtosEmEstoque.map((prod) => {
               return (
                 <div
                   key={prod.id_produto}
@@ -149,14 +155,11 @@ function HomePage() {
                 >
                   <div>
                     {/* Imagem do produto */}
-                    <div className="h-44 bg-[#FDF8FB] rounded-xl flex items-center justify-center p-4 mb-4 overflow-hidden">
+                    <div className="h-44 bg-[#FDF8FB] rounded-xl flex items-center justify-center p-4 mb-4 overflow-hidden border border-stone-100">
                       <img
-                        src={
-                          prod.imagem_url ||
-                          "https://via.placeholder.com/160?text=Fiore"
-                        }
+                        src={formatImageUrl(prod.imagem_url)}
                         alt={prod.nome}
-                        className="max-h-full object-contain"
+                        className="max-h-full object-contain hover:scale-105 transition-transform duration-300"
                       />
                     </div>
 
@@ -166,14 +169,19 @@ function HomePage() {
                     </span>
 
                     {/* Nome */}
-                    <h2 className="text-base font-bold text-stone-900 mt-2">
+                    <h3 className="text-base font-bold text-stone-900 mt-2 line-clamp-1">
                       {prod.nome}
-                    </h2>
+                    </h3>
 
-                    {/* Descrição */}
-                    <p className="text-xs text-stone-500 mt-1 line-clamp-2">
-                      {prod.descricao_olfativa}
-                    </p>
+                    {/* Descrição Olfativa em destaque */}
+                    <div className="mt-1.5 p-2 bg-stone-50 rounded-lg border border-stone-100">
+                      <p className="text-[10px] font-bold text-stone-600 uppercase tracking-wider mb-0.5">
+                        Pirâmide Olfativa
+                      </p>
+                      <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                        {prod.descricao_olfativa || "Fragrância sofisticada e marcante da perfumaria Fiore."}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Preço e botão */}
@@ -186,28 +194,24 @@ function HomePage() {
                         })}
                       </p>
 
-                      <p className="text-[11px] text-stone-400">
-                        {esgotado
-                          ? "Indisponível"
-                          : `${prod.quantidade_estoque} em estoque`}
+                      <p className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+                        {prod.quantidade_estoque} un. disponíveis
                       </p>
                     </div>
 
                     <button
                       type="button"
-                      disabled={esgotado}
                       onClick={() => handleAdicionar(prod)}
-                      className={`px-4 py-2 rounded-full text-white text-xs font-semibold transition disabled:bg-stone-300 disabled:cursor-not-allowed ${
+                      className={`px-4 py-2 rounded-full text-white text-xs font-semibold transition shadow-sm ${
                         adicionadoId === prod.id_produto
-                          ? "bg-green-600"
+                          ? "bg-emerald-600"
                           : "bg-[#DD0088] hover:bg-[#C4007A]"
                       }`}
                     >
-                      {esgotado
-                        ? "Esgotado"
-                        : adicionadoId === prod.id_produto
-                          ? "Produto adicionado!"
-                          : "Adicionar ao carrinho"}
+                      {adicionadoId === prod.id_produto
+                        ? "Adicionado!"
+                        : "Adicionar"}
                     </button>
                   </div>
                 </div>

@@ -30,8 +30,36 @@ export const Register: React.FC = () => {
     setError('');
     setSuccess('');
 
-    if (!aceite) {
-      setError('Aceite os Termos de Uso e a Política de Privacidade para continuar.');
+    const nomeLimpo = formData.nome.trim();
+    const sobrenomeLimpo = formData.sobrenome.trim();
+    const emailLimpo = formData.email.trim();
+    const enderecoLimpo = formData.endereco.trim();
+    const telefoneLimpo = formData.telefone.trim();
+
+    if (!nomeLimpo) {
+      setError('Por favor, informe seu nome.');
+      return;
+    }
+
+    if (!sobrenomeLimpo) {
+      setError('Por favor, informe seu sobrenome.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailLimpo || !emailRegex.test(emailLimpo)) {
+      setError('Por favor, informe um endereço de e-mail válido.');
+      return;
+    }
+
+    const apenasDigitosTelefone = telefoneLimpo.replace(/\D/g, '');
+    if (!telefoneLimpo || apenasDigitosTelefone.length < 10) {
+      setError('Por favor, informe um telefone válido com DDD (mínimo 10 dígitos).');
+      return;
+    }
+
+    if (!enderecoLimpo) {
+      setError('Por favor, informe seu endereço completo.');
       return;
     }
 
@@ -40,14 +68,19 @@ export const Register: React.FC = () => {
       return;
     }
 
+    if (!aceite) {
+      setError('Você deve aceitar os Termos de Uso e a Política de Privacidade para continuar.');
+      return;
+    }
+
     setLoading(true);
     try {
       const payload = {
-        nome: `${formData.nome} ${formData.sobrenome}`.trim(),
-        email: formData.email,
-        telefone: formData.telefone,
+        nome: `${nomeLimpo} ${sobrenomeLimpo}`.trim(),
+        email: emailLimpo,
+        telefone: telefoneLimpo,
         senha: formData.senha,
-        endereco: formData.endereco, // Envia o endereço preenchido
+        endereco: enderecoLimpo,
       };
 
       const res = await fetch('http://localhost:3333/api/auth/register', {

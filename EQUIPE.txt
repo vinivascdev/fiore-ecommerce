@@ -1,0 +1,36 @@
+================================================================================
+🌸 FIORE PERFUMES - E-COMMERCE DE LUXO
+TRABALHO FINAL - 3ª ENTREGA (TF03)
+================================================================================
+
+EQUIPE DE DESENVOLVIMENTO:
+--------------------------------------------------------------------------------
+1. Nome: [NOME DO INTEGRANTE 1]
+   Matrícula: [MATRÍCULA 1]
+   E-mail: [EMAIL 1]
+
+2. Nome: [NOME DO INTEGRANTE 2]
+   Matrícula: [MATRÍCULA 2]
+   E-mail: [EMAIL 2]
+
+3. Nome: [NOME DO INTEGRANTE 3]
+   Matrícula: [MATRÍCULA 3]
+   E-mail: [EMAIL 3]
+
+4. Nome: [NOME DO INTEGRANTE 4]
+   Matrícula: [MATRÍCULA 4]
+   E-mail: [EMAIL 4]
+
+--------------------------------------------------------------------------------
+DADOS DE ACESSO PADRÃO PARA AVALIAÇÃO:
+--------------------------------------------------------------------------------
+- Administrador inicial gerado via seed:
+  E-mail: admin@fiore.com
+  Senha:  admin123
+
+- Perfil Cliente:
+  Cadastre-se pela tela pública em /cadastro ou use login de cliente criado.
+
+- Banco de Dados Online (Supabase):
+  Configurado com suporte a Pooling (PgBouncer, porta 6543) e Conexão Direta (porta 5432).
+================================================================================

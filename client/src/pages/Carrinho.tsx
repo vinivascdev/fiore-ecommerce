@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCarrinho } from "../context/CarrinhoContext";
+import { formatImageUrl } from "../utils/image";
 
 const FRETE_FIXO = 24.9;
 const FRETE_GRATIS_ACIMA = 199;
@@ -174,10 +175,7 @@ export function Carrinho() {
                   >
                     {/* Imagem */}
                     <img
-                      src={
-                        produto.imagem_url ||
-                        "https://via.placeholder.com/160?text=Fiore"
-                      }
+                      src={formatImageUrl(produto.imagem_url)}
                       alt={produto.nome}
                       className="h-20 w-20 shrink-0 rounded-2xl bg-[#FDF8FB] object-contain p-2 shadow-md"
                     />

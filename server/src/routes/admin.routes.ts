@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AdminController } from '../controllers/AdminController';
 import { isAuthenticated, requireRole } from '../middlewares/auth.middleware';
+import { upload } from '../middlewares/upload.middleware';
 import { TipoUsuario } from '@prisma/client';
 
 const adminRoutes = Router();
@@ -9,6 +10,8 @@ const adminRoutes = Router();
 adminRoutes.use(isAuthenticated, requireRole(TipoUsuario.ADMIN));
 
 adminRoutes.get('/dashboard', AdminController.getDashboard);
+
+adminRoutes.post('/upload', upload.single('foto'), AdminController.uploadFoto);
 
 adminRoutes.get('/usuarios', AdminController.listarUsuarios);
 adminRoutes.patch('/usuarios/:id/role', AdminController.alterarRoleUsuario);

@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import session from 'express-session';
+import path from 'path';
+import fs from 'fs';
 import { authRoutes } from './routes/auth.routes';
 import usuarioRoutes from './routes/usuarioRoutes';
 import { adminRoutes } from './routes/admin.routes';
@@ -10,6 +12,12 @@ import { prisma } from './database/prisma';
 
 const app = express();
 const port = process.env.PORT || 3333;
+
+const uploadsPath = path.resolve(__dirname, '../uploads');
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsPath));
 
 app.use(
   cors({
@@ -37,10 +45,15 @@ app.get('/health', (_req: Request, res: Response) => {
   return res.status(200).json({ status: 'ok' });
 });
 
-// Rota pública para a Home listar os produtos e categorias cadastrados
+// Rota pública para a Home listar os produtos e categorias cadastrados (apenas com estoque disponível)
 app.get('/api/produtos', async (_req: Request, res: Response) => {
   try {
     const produtos = await prisma.produto.findMany({
+      where: {
+        quantidade_estoque: {
+          gt: 0,
+        },
+      },
       include: { categoria: true },
       orderBy: { id_produto: 'desc' },
     });

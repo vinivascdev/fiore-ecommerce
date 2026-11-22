@@ -37,6 +37,24 @@ export class AdminController {
     }
   }
 
+  // ==================== UPLOAD DE ARQUIVOS ====================
+  static async uploadFoto(req: Request, res: Response) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'Nenhum arquivo enviado.' });
+      }
+      const url = `/uploads/${req.file.filename}`;
+      return res.status(200).json({
+        message: 'Foto enviada com sucesso!',
+        url,
+        filename: req.file.filename,
+      });
+    } catch (error) {
+      console.error('Erro no upload de foto:', error);
+      return res.status(500).json({ message: 'Erro ao processar upload da foto.' });
+    }
+  }
+
   // ==================== CATEGORIAS (CRUD) ====================
   static async listarCategorias(_req: Request, res: Response) {
     const categorias = await prisma.categoria.findMany({

@@ -1,5 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { formatImageUrl } from '../utils/image';
 
 interface DadosPerfil {
   nome: string;
@@ -92,8 +94,9 @@ interface PerfilProps {
 }
 
 export function Perfil({ modoAdmin = false }: PerfilProps) {
+  const navigate = useNavigate();
   const { user, logout } = useAuth() as ReturnType<typeof useAuth> & {
-    logout?: () => void;
+    logout?: () => Promise<void> | void;
   };
 
   const [aba, setAba] = useState<Aba>('dados');
@@ -315,7 +318,8 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
       }
 
       setConfirmandoExclusao(false);
-      logout?.();
+      await logout?.();
+      navigate('/login');
     } catch (erroRecebido) {
       setErroExclusao(
         erroRecebido instanceof Error
@@ -696,7 +700,7 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
                             className="flex items-center gap-3 py-4"
                           >
                             <img
-                              src={item.produto?.imagem_url || '/placeholder.png'}
+                              src={formatImageUrl(item.produto?.imagem_url)}
                               alt={item.produto?.nome || 'Produto'}
                               className="h-16 w-16 shrink-0 rounded-xl border border-stone-100 bg-stone-50 object-contain"
                             />

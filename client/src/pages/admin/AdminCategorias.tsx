@@ -38,6 +38,9 @@ export const AdminCategorias: React.FC = () => {
     if (res.ok) {
       setModalAberto(false);
       carregar();
+    } else {
+      const err = await res.json().catch(() => ({}));
+      alert(err.message || 'Erro ao salvar categoria');
     }
   };
 
