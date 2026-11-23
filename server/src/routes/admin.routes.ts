@@ -35,10 +35,6 @@ adminRoutes.get('/pedidos/:id', AdminController.obterPedido);
 adminRoutes.patch('/pedidos/:id/status', AdminController.atualizarStatusPedido);
 adminRoutes.delete('/pedidos/:id', AdminController.excluirPedido);
 
-// Usuários
-adminRoutes.get('/usuarios', AdminController.listarUsuarios);
-adminRoutes.delete('/usuarios/:id', AdminController.excluirUsuario);
-
 // Relatórios
 adminRoutes.get('/relatorios', AdminController.relatorios);
 

@@ -30,7 +30,7 @@ export const AdminPedidoDetalhes: React.FC = () => {
 
   return (
     <div className="max-w-5xl space-y-6">
-      <Link to="/admin/pedidos" className="text-xs font-semibold text-[#DD0088] hover:underline">
+      <Link to="/admin/pedidos" className="text-xs font-semibold text-[#DD0088] hover:underline print:hidden">
         ← Voltar para pedidos
       </Link>
 
@@ -47,7 +47,7 @@ export const AdminPedidoDetalhes: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 print:hidden">
           <button
             onClick={() => window.print()}
             className="border border-[#DD0088] text-[#DD0088] text-xs font-bold px-5 py-2.5 rounded-full hover:bg-pink-50"

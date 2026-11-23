@@ -59,13 +59,13 @@ export const AdminRelatorios: React.FC = () => {
     }
 
     let conteudo = `RELATÓRIO GERENCIAL FIORE - ${tipo.toUpperCase()}\nPeríodo: ${dataInicio} a ${dataFim}\n----------------------------------------\n`;
-    dados.forEach((item, idx) => {
+    dados.forEach((item) => {
       if (tipo === 'compras-por-cliente') {
-        conteudo += `#${idx + 1} ${item.nome} - ${item.totalPedidos} pedidos (R$ ${Number(item.valorTotal ?? 0).toFixed(2)})\n`;
+        conteudo += `ID #${item.id} - ${item.nome} - ${item.totalPedidos} pedidos (R$ ${Number(item.valorTotal ?? 0).toFixed(2)})\n`;
       } else if (tipo === 'receita-por-dia') {
         conteudo += `${item.data}: R$ ${Number(item.total ?? 0).toFixed(2)}\n`;
       } else {
-        conteudo += `#${idx + 1} ${item.nome} (${item.categoria?.nome}) - Valor: R$ ${item.preco} - ESGOTADO\n`;
+        conteudo += `ID #${item.id_produto} - ${item.nome} (${item.categoria?.nome || 'Sem categoria'}) - Descrição: ${item.descricao_olfativa || 'N/A'} - Valor: R$ ${Number(item.preco ?? 0).toFixed(2)} - ESGOTADO\n`;
       }
     });
 
@@ -84,13 +84,13 @@ export const AdminRelatorios: React.FC = () => {
     <div className="max-w-6xl space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-stone-950">Relatórios Gerenciais</h1>
-        <p className="text-sm text-stone-600 mt-1">
+        <p className="text-sm text-stone-600 mt-1 print:hidden">
           Selecione o tipo de relatório, o período e o formato de exportação.
         </p>
       </div>
 
       {/* 3 Cards de Seleção */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 print:hidden">
         <button
           type="button"
           onClick={() => selecionarTipo('compras-por-cliente')}
@@ -153,7 +153,7 @@ export const AdminRelatorios: React.FC = () => {
       </div>
 
       {/* Parâmetros do Relatório */}
-      <div className="bg-white rounded-2xl border border-stone-200 p-6">
+      <div className="bg-white rounded-2xl border border-stone-200 p-6 print:hidden">
         <h2 className="ml-auto inline-flex text-xs font-bold text-stone-900 mb-4"> 
           <img
               src="/icons/settings.svg"
@@ -234,7 +234,7 @@ export const AdminRelatorios: React.FC = () => {
           {carregando && <p className="p-8 text-center text-xs text-stone-400">Carregando relatório...</p>}
           {erro && <p role="alert" className="p-8 text-center text-xs text-red-600">{erro}</p>}
           {tipo === 'compras-por-cliente' &&
-            dados.map((item, idx) => (
+            dados.map((item) => (
               <div key={item.id} className="px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-[#FFD6F0] text-[#DD0088] font-bold text-xs flex items-center justify-center">
@@ -242,7 +242,7 @@ export const AdminRelatorios: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm font-bold text-stone-900">{item.nome}</p>
-                    <p className="text-xs text-stone-400">#{String(idx + 1).padStart(2, '0')}</p>
+                    <p className="text-xs text-stone-500 font-medium">ID #{item.id}</p>
                   </div>
                 </div>
                 <span className="text-xs font-bold text-[#DD0088]">{item.totalPedidos} pedidos</span>
@@ -266,20 +266,28 @@ export const AdminRelatorios: React.FC = () => {
             ))}
 
           {tipo === 'produtos-em-falta' &&
-            dados.map((prod, idx) => (
-              <div key={prod.id_produto} className="px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <span className="text-xs text-stone-400">#{String(idx + 1).padStart(2, '0')}</span>
-                  <div>
+            dados.map((prod) => (
+              <div key={prod.id_produto} className="px-6 py-4 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4 min-w-0">
+                  <span className="text-xs font-bold text-stone-600 bg-stone-100 px-2.5 py-1 rounded-full shrink-0">
+                    ID #{prod.id_produto}
+                  </span>
+                  <div className="min-w-0">
                     <p className="text-sm font-bold text-stone-900">{prod.nome}</p>
-                    <p className="text-xs text-stone-400">{prod.descricao_olfativa}</p>
+                    <p className="text-xs text-stone-500 truncate">{prod.descricao_olfativa}</p>
                   </div>
                 </div>
-                <span className="text-xs text-stone-600">{prod.categoria?.nome || 'Sem categoria'}</span>
-                <span className="text-xs font-semibold text-stone-800">
-                  Valor: {Number(prod.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                </span>
-                <span className="text-xs font-bold text-[#DD0088]">ESGOTADO</span>
+                <div className="flex items-center gap-6 shrink-0">
+                  <span className="text-xs text-stone-600 bg-pink-50 text-[#DD0088] font-semibold px-2.5 py-1 rounded-full">
+                    {prod.categoria?.nome || 'Sem categoria'}
+                  </span>
+                  <span className="text-xs font-semibold text-stone-800">
+                    Valor: {Number(prod.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </span>
+                  <span className="text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-full">
+                    ESGOTADO
+                  </span>
+                </div>
               </div>
             ))}
 

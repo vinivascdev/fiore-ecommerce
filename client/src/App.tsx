@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useSearchParams } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { GuestRoute } from "./components/GuestRoute";
@@ -26,6 +26,9 @@ function HomePage() {
   const [produtos, setProdutos] = useState<any[]>([]);
   const [carregando, setCarregando] = useState(true);
   const { adicionar } = useCarrinho();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const busca = searchParams.get("busca")?.trim() || "";
 
   const [adicionadoId, setAdicionadoId] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -54,6 +57,20 @@ function HomePage() {
 
   // Garante a exibição estrita apenas de produtos disponíveis em estoque (quantidade > 0)
   const produtosEmEstoque = produtos.filter((p) => Number(p.quantidade_estoque) > 0);
+
+  // Filtra produtos pela busca do Header (nome, descrição olfativa ou categoria)
+  const produtosFiltrados = produtosEmEstoque.filter((prod) => {
+    if (!busca) return true;
+    const termo = busca.toLowerCase();
+    const nome = (prod.nome || "").toLowerCase();
+    const descricao = (prod.descricao_olfativa || "").toLowerCase();
+    const categoria = (prod.categoria?.nome || "").toLowerCase();
+    return (
+      nome.includes(termo) ||
+      descricao.includes(termo) ||
+      categoria.includes(termo)
+    );
+  });
 
   return (
     <div className="flex-1 bg-gradient-to-b from-[#FFF5FA] via-white to-stone-50">
@@ -121,14 +138,27 @@ function HomePage() {
       {/* SEÇÃO DE PRODUTOS */}
       <div className="w-full px-8 md:px-12 lg:px-16 py-10">
         {/* Título e descrição */}
-        <div id="produtos" className="mb-6 scroll-mt-6">
-          <h2 className="text-xl md:text-2xl font-bold text-[#151C2E] tracking-tight">
-            Mais Procurados do Momento
-          </h2>
+        <div id="produtos" className="mb-6 scroll-mt-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-[#151C2E] tracking-tight">
+              {busca ? `Resultados da busca por "${busca}"` : "Mais Procurados do Momento"}
+            </h2>
 
-          <p className="text-sm text-slate-500 mt-1">
-            Confira as novidades com estoque garantido a pronta entrega.
-          </p>
+            <p className="text-sm text-slate-500 mt-1">
+              {busca
+                ? `${produtosFiltrados.length} fragrância(s) encontrada(s) com estoque garantido.`
+                : "Confira as novidades com estoque garantido a pronta entrega."}
+            </p>
+          </div>
+
+          {busca && (
+            <button
+              onClick={() => setSearchParams({})}
+              className="px-4 py-1.5 rounded-full border border-[#DD0088] text-[#DD0088] hover:bg-pink-50 text-xs font-semibold transition"
+            >
+              ✕ Limpar busca
+            </button>
+          )}
         </div>
 
         {/* Carregamento dos produtos */}
@@ -136,18 +166,30 @@ function HomePage() {
           <p className="text-center text-sm text-stone-500">
             Carregando fragrâncias...
           </p>
-        ) : produtosEmEstoque.length === 0 ? (
+        ) : produtosFiltrados.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-2xl border border-stone-200 p-8 max-w-md mx-auto">
             <p className="text-base font-bold text-stone-800">
-              Nenhum perfume disponível em estoque no momento.
+              {busca
+                ? `Nenhum perfume encontrado para "${busca}".`
+                : "Nenhum perfume disponível em estoque no momento."}
             </p>
             <p className="text-xs text-stone-500 mt-1">
-              Volte em breve para conferir novas reposições do nosso catálogo de luxo.
+              {busca
+                ? "Tente buscar por outro termo, nome da fragrância ou família olfativa."
+                : "Volte em breve para conferir novas reposições do nosso catálogo de luxo."}
             </p>
+            {busca && (
+              <button
+                onClick={() => setSearchParams({})}
+                className="mt-4 px-5 py-2 rounded-full bg-[#DD0088] text-white text-xs font-semibold hover:bg-[#C4007A] transition"
+              >
+                Ver todos os produtos
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {produtosEmEstoque.map((prod) => {
+            {produtosFiltrados.map((prod) => {
               return (
                 <div
                   key={prod.id_produto}

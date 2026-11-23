@@ -75,6 +75,8 @@ export function Carrinho() {
             id_produto: item.produto.id_produto,
             quantidade: item.quantidade,
           })),
+          cupom: cupomAplicado?.codigo || null,
+          cep: freteCalculado ? cep : null,
         }),
       });
       const resultado = await resposta.json().catch(() => ({}));

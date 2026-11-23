@@ -8,7 +8,7 @@ Projeto full-stack de e-commerce de perfumaria de luxo desenvolvido em **TypeScr
 
 ```text
 fiore-ecommerce/
-├── EQUIPE.txt               # Identificação dos integrantes para entrega acadêmica (TF03)
+├── EQUIPE.txt               # Identificação dos integrantes para entrega acadêmica (TF04)
 ├── README.md                # Documentação técnica e instruções de execução
 ├── client/                  # Frontend (React + Vite + Tailwind CSS + Context API)
 │   ├── src/
@@ -140,14 +140,13 @@ WHERE email = 'seu_email@exemplo.com';
 
 ---
 
-## 📋 Funcionalidades da 3ª Entrega (TF03)
+## 📋 Funcionalidades da Entrega Completa (TF04)
 
-1. **Página Inicial Pública (Home - `/`):**
+1. **Página Inicial Pública & Busca Integrada (Home - `/`):**
    * Acesso 100% público sem necessidade de autenticação.
-   * Busca dinâmica de produtos via rota `GET /api/produtos`.
+   * Barra de busca no Header conectada à vitrine via URL (`/?busca=...`), filtrando produtos por nome, descrição olfativa e categoria com opção de limpar filtro.
    * Filtro automático exibindo apenas produtos com **estoque disponível** (`quantidade_estoque > 0`).
    * Destaque na foto, descrição olfativa detalhada, preço em Real (BRL) e status de estoque.
-   * Links diretos e visíveis para Entrar (Login único), Cadastre-se e Carrinho de Compras.
 
 2. **Segurança, Autenticação e Sessão:**
    * Sessão persistente baseada em cookies seguros com `express-session` (`connect.sid`).
@@ -157,7 +156,23 @@ WHERE email = 'seu_email@exemplo.com';
    * Cliente logado altera dados pessoais e exclui o próprio cadastro em `/minha-conta`.
    * Administrador logado altera dados pessoais e exclui o próprio cadastro em `/admin/perfil`.
 
-3. **Painel do Administrador (`/admin/*`):**
-   * **CRUD de Categorias:** Listagem com contagem de produtos, criação, edição e exclusão (com bloqueio seguro e aviso amigável caso haja produtos vinculados).
-   * **CRUD de Produtos:** Listagem com busca e filtro por categoria, criação, edição de todos os atributos e atualização de **quantidade em estoque**.
-   * **Upload de Fotos para o Servidor:** Inclusão, substituição e remoção de fotos de produtos através de upload de arquivo via `multer` com armazenamento em `server/uploads` e serviço estático pelo Express, com prévia em tempo real e fallback.
+3. **Carrinho de Compras, Cupons e Frete:**
+   * Adição dinâmica de itens com checagem de estoque.
+   * Aplicação e validação de cupons de desconto (`FIORE10`: 10%, `BEMVINDO15`: 15%).
+   * Cálculo de frete por CEP (R$ 24,90 ou Frete Grátis em compras acima de R$ 199,00).
+   * Sincronização estrita de valores: o backend valida cupons e frete, garantindo que o valor salvo no pedido seja idêntico ao do carrinho.
+
+4. **Pedidos e Baixa Atômica de Estoque:**
+   * Finalização de compra transacional via `prisma.$transaction`: validação de estoque em tempo real, decremento imediato e gravação do pedido.
+   * Histórico de pedidos do cliente em `/minha-conta` com status, itens e valor total.
+
+5. **Painel do Administrador & Relatórios Gerenciais (`/admin/*`):**
+   * **Dashboard:** Resumo de receita, clientes cadastrados, categorias e produtos com estoque zerado.
+   * **CRUD de Categorias:** Listagem com contagem de produtos, criação, edição e exclusão segura.
+   * **CRUD de Produtos:** Listagem com busca/filtro, criação, edição de estoque e upload/troca/remoção de foto (Multer com armazenamento local estático).
+   * **Gestão de Pedidos:** Listagem, alteração de status (ex: "Enviado"), exclusão e impressão de detalhes do pedido (com layout de impressão limpo).
+   * **Relatórios Gerenciais:**
+     - Compras por cliente (com ID real do cliente).
+     - Receita por dia (gráfico de barras e valores).
+     - Produtos em falta (com ID real do produto, categoria e estoque zerado).
+     - Exportação em arquivo `.txt` formatado e em formato **HTML** para impressão/PDF limpa (com ocultação automática de controles e sidebar via `print:hidden`).

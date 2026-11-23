@@ -21,9 +21,9 @@ export const AdminLayout: React.FC = () => {
   const inicial = user?.nome?.charAt(0).toUpperCase() || 'A';
 
   return (
-    <div className="min-h-screen flex bg-[#F7F7F8] font-sans text-stone-900">
+    <div className="min-h-screen flex bg-[#F7F7F8] font-sans text-stone-900 print:bg-white print:block">
       {/* Sidebar Esquerda */}
-      <aside className="w-60 bg-white border-r border-stone-200 flex flex-col justify-between shrink-0">
+      <aside className="w-60 bg-white border-r border-stone-200 flex flex-col justify-between shrink-0 print:hidden">
         <div>
           
           <div>
@@ -172,25 +172,22 @@ export const AdminLayout: React.FC = () => {
       {/* Área Principal */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="h-[73px] bg-white border-b border-stone-200 px-8 flex items-center justify-end">
+        <header className="h-[73px] bg-white border-b border-stone-200 px-8 flex items-center justify-end print:hidden">
           <button
             aria-label="Notificações"
             className="w-10 h-10 rounded-full border border-[#DD0088] flex items-center justify-center text-stone-800 hover:bg-pink-50 transition"
           >
-
-                  <img
-            src="/icons/notificacao.svg"
-            alt=""
-            aria-hidden="true"
-            className="h-5 w-5"
-          />  
-
-            
+            <img
+              src="/icons/notificacao.svg"
+              alt=""
+              aria-hidden="true"
+              className="h-5 w-5"
+            />
           </button>
         </header>
 
         {/* Conteúdo das Rotas Filhas */}
-        <main className="flex-1 p-8 overflow-y-auto">
+        <main className="flex-1 p-8 overflow-y-auto print:p-0 print:overflow-visible">
           <Outlet />
         </main>
       </div>

@@ -1,36 +1,76 @@
 ================================================================================
 🌸 FIORE PERFUMES - E-COMMERCE DE LUXO
-TRABALHO FINAL - 3ª ENTREGA (TF03)
+TRABALHO FINAL - 4ª ENTREGA (TF04 - ENTREGA COMPLETA)
 ================================================================================
 
 EQUIPE DE DESENVOLVIMENTO:
 --------------------------------------------------------------------------------
-1. Nome: [NOME DO INTEGRANTE 1]
-   Matrícula: [MATRÍCULA 1]
-   E-mail: [EMAIL 1]
+1. Nome: ANA CAROLINA DE SOUSA FURTADO
+   Matrícula: 566030
+   E-mail: anacarolinasf@alu.ufc.br
 
-2. Nome: [NOME DO INTEGRANTE 2]
-   Matrícula: [MATRÍCULA 2]
-   E-mail: [EMAIL 2]
+2. Nome: ANA TAINARA BATISTA DO NASCIMENTO
+   Matrícula: 565639
+   E-mail: anatainarabat@gmail.com
 
-3. Nome: [NOME DO INTEGRANTE 3]
-   Matrícula: [MATRÍCULA 3]
-   E-mail: [EMAIL 3]
+3. Nome: JOÃO VINÍCIUS PEREIRA DE VASCONCELOS SILVA
+   Matrícula: 568541
+   E-mail: joaoviniciuspereiraa@gmail.com
 
-4. Nome: [NOME DO INTEGRANTE 4]
-   Matrícula: [MATRÍCULA 4]
-   E-mail: [EMAIL 4]
+4. Nome: MARIA VITÓRIA DINIZ DE OLIVEIRA
+   Matrícula: 565274
+   E-mail: mariavitoriadz@gmail.com
+
+5. Nome: YASMIN NEVES VALE
+   Matrícula: 567577
+   E-mail: yasminneves6440@gmail.com
+   
+
+--------------------------------------------------------------------------------
+RESUMO DAS FUNCIONALIDADES ENTREGUES (TF01 A TF04):
+--------------------------------------------------------------------------------
+1. Vitrine Pública & Busca:
+   - Acesso público a produtos disponíveis em estoque (> 0).
+   - Busca integrada no Header filtrando por nome, descrição olfativa e categoria.
+   - Destaque para pirâmide olfativa, preços e fotos (upload estático ou remoto).
+
+2. Autenticação, Sessão & Perfis:
+   - Autenticação e persistência de sessão por cookies (express-session).
+   - Validação completa no front-end para cadastro de novos clientes.
+   - Edição de dados pessoais, alteração de senha e exclusão de conta pelo próprio usuário.
+   - Proteção de rotas com controle de acesso por tipo de usuário (CLIENTE / ADMIN).
+
+3. Carrinho, Frete & Cupons de Desconto:
+   - Adição, remoção e alteração de quantidade de itens no carrinho.
+   - Cálculo de frete por CEP (frete grátis acima de R$ 199,00).
+   - Aplicação de cupons de desconto (FIORE10: 10%, BEMVINDO15: 15%).
+   - Sincronização atômica do total final entre o carrinho e o backend.
+
+4. Pedidos & Baixa de Estoque:
+   - Finalização de compra exclusiva para clientes logados.
+   - Transação atômica no PostgreSQL (Prisma $transaction) que valida estoque,
+     decrementa as quantidades e registra o pedido e seus itens.
+   - Histórico de pedidos do cliente na área "Meus Pedidos" com status e totais.
+
+5. Painel Administrativo Completo:
+   - Dashboard com resumo de vendas, clientes, categorias e produtos sem estoque.
+   - CRUD completo de Categorias com prevenção de exclusão com produtos vinculados.
+   - CRUD completo de Produtos com edição de estoque e upload/troca/remoção de foto (Multer).
+   - Gestão de Pedidos: listagem detalhada, alteração de status e impressão de pedido.
+   - Relatórios Gerenciais: Compras por cliente (com ID real), Receita por dia e
+     Produtos em falta (com ID real e estoque zerado), com exportação em TXT e HTML (impressão limpa).
 
 --------------------------------------------------------------------------------
 DADOS DE ACESSO PADRÃO PARA AVALIAÇÃO:
 --------------------------------------------------------------------------------
-- Administrador inicial gerado via seed:
-  E-mail: admin@fiore.com
+- Administrador Inicial:
+  E-mail: admin@fiore.com (ou o e-mail configurado no banco Supabase)
   Senha:  admin123
+  Área:   /login (redireciona para /admin)
 
-- Perfil Cliente:
-  Cadastre-se pela tela pública em /cadastro ou use login de cliente criado.
+- Cliente:
+  Cadastre-se pela tela pública em /cadastro ou use uma conta já cadastrada.
 
 - Banco de Dados Online (Supabase):
-  Configurado com suporte a Pooling (PgBouncer, porta 6543) e Conexão Direta (porta 5432).
+  Configurado e validado com suporte a Pooling (porta 6543) e Conexão Direta (porta 5432).
 ================================================================================

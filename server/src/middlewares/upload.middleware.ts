@@ -1,24 +1,6 @@
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
 
-const uploadsDir = path.resolve(__dirname, '../../uploads');
-
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    const baseName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '');
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${baseName || 'foto'}-${uniqueSuffix}${ext}`);
-  },
-});
+const storage = multer.memoryStorage();
 
 export const upload = multer({
   storage,

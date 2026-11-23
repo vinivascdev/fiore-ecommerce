@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
+import path from 'path';
 import { prisma } from '../database/prisma';
+import { supabase, SUPABASE_BUCKET } from '../database/supabase';
 
 export class AdminController {
   // ==================== DASHBOARD ====================
@@ -37,21 +39,63 @@ export class AdminController {
     }
   }
 
-  // ==================== UPLOAD DE ARQUIVOS ====================
+  // ==================== UPLOAD E GESTÃO DE FOTOS (SUPABASE STORAGE) ====================
+  private static async removerFotoSupabase(imagemUrl?: string | null) {
+    if (!imagemUrl || typeof imagemUrl !== 'string') return;
+    try {
+      // Padrão de URL pública do Supabase Storage:
+      // .../storage/v1/object/public/[BUCKET]/[CAMINHO_DO_ARQUIVO]
+      const marcador = `/storage/v1/object/public/${SUPABASE_BUCKET}/`;
+      const index = imagemUrl.indexOf(marcador);
+      if (index !== -1) {
+        const caminhoRelativo = decodeURIComponent(imagemUrl.substring(index + marcador.length));
+        if (caminhoRelativo) {
+          await supabase.storage.from(SUPABASE_BUCKET).remove([caminhoRelativo]);
+        }
+      }
+    } catch (err) {
+      // Captura silenciosa para garantir que erros de limpeza não interrompam o fluxo principal
+      console.warn('Aviso: Falha ao remover imagem do Supabase Storage:', err);
+    }
+  }
+
   static async uploadFoto(req: Request, res: Response) {
     try {
       if (!req.file) {
         return res.status(400).json({ message: 'Nenhum arquivo enviado.' });
       }
-      const url = `/uploads/${req.file.filename}`;
+
+      const ext = path.extname(req.file.originalname).toLowerCase();
+      const baseName = path.basename(req.file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '');
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const fileName = `produtos/${baseName || 'foto'}-${uniqueSuffix}${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(SUPABASE_BUCKET)
+        .upload(fileName, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error('Erro no upload para o Supabase Storage:', uploadError);
+        return res.status(500).json({
+          message: `Erro ao enviar foto para o Supabase Storage: ${uploadError.message}`,
+        });
+      }
+
+      const { data } = supabase.storage.from(SUPABASE_BUCKET).getPublicUrl(fileName);
+
       return res.status(200).json({
         message: 'Foto enviada com sucesso!',
-        url,
-        filename: req.file.filename,
+        url: data.publicUrl,
+        filename: fileName,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro no upload de foto:', error);
-      return res.status(500).json({ message: 'Erro ao processar upload da foto.' });
+      return res.status(500).json({
+        message: error?.message || 'Erro ao processar upload da foto.',
+      });
     }
   }
 
@@ -139,6 +183,11 @@ export class AdminController {
       const { nome, descricao_olfativa, preco, quantidade_estoque, imagem_url, id_categoria } =
         req.body;
 
+      const produtoAtual = await prisma.produto.findUnique({
+        where: { id_produto: id },
+        select: { imagem_url: true },
+      });
+
       const produto = await prisma.produto.update({
         where: { id_produto: id },
         data: {
@@ -152,6 +201,11 @@ export class AdminController {
         include: { categoria: true },
       });
 
+      // Se a foto foi alterada ou removida, remove a foto antiga do Supabase Storage
+      if (produtoAtual?.imagem_url && produtoAtual.imagem_url !== produto.imagem_url) {
+        await AdminController.removerFotoSupabase(produtoAtual.imagem_url);
+      }
+
       return res.json(produto);
     } catch (error) {
       console.error(error);
@@ -162,7 +216,17 @@ export class AdminController {
   static async excluirProduto(req: Request, res: Response) {
     try {
       const id = Number(req.params.id);
+      const produto = await prisma.produto.findUnique({
+        where: { id_produto: id },
+        select: { imagem_url: true },
+      });
+
       await prisma.produto.delete({ where: { id_produto: id } });
+
+      if (produto?.imagem_url) {
+        await AdminController.removerFotoSupabase(produto.imagem_url);
+      }
+
       return res.json({ message: 'Produto removido com sucesso.' });
     } catch {
       return res.status(400).json({

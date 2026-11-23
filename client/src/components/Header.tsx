@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCarrinho } from '../context/CarrinhoContext';
 
@@ -7,6 +7,23 @@ export const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const { quantidadeItens } = useCarrinho();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const [termoBusca, setTermoBusca] = useState(searchParams.get('busca') || '');
+
+  useEffect(() => {
+    setTermoBusca(searchParams.get('busca') || '');
+  }, [searchParams]);
+
+  const handleBusca = (e: React.FormEvent) => {
+    e.preventDefault();
+    const termo = termoBusca.trim();
+    if (termo) {
+      navigate(`/?busca=${encodeURIComponent(termo)}`);
+    } else {
+      navigate('/');
+    }
+  };
 
   const isAdmin = user?.tipo_usuario === 'ADMIN';
   const primeiroNome = user?.nome?.split(' ')[0];
@@ -38,17 +55,24 @@ export const Header: React.FC = () => {
           </Link>
 
           {/* Busca */}
-          <div className="hidden md:flex flex-1 max-w-[480px] items-center gap-2 h-10 px-3 bg-[#F8F9FB] border border-stone-200 rounded-md">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3.5-3.5" />
-            </svg>
+          <form
+            onSubmit={handleBusca}
+            className="hidden md:flex flex-1 max-w-[480px] items-center gap-2 h-10 px-3 bg-[#F8F9FB] border border-stone-200 rounded-md focus-within:border-[#DD0088] transition-colors"
+          >
+            <button type="submit" aria-label="Buscar" className="text-stone-500 hover:text-[#DD0088] transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+            </button>
             <input
               type="search"
+              value={termoBusca}
+              onChange={(e) => setTermoBusca(e.target.value)}
               placeholder="Buscar produtos, marcas e categorias..."
               className="flex-1 bg-transparent text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none"
             />
-          </div>
+          </form>
 
           {/* Ações */}
           <nav className="ml-auto flex items-center gap-3 md:gap-5 text-sm">

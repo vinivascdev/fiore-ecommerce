@@ -7,15 +7,40 @@ interface LinhaCarrinho {
   quantidade: number;
 }
 
+const CUPONS_VALIDOS: Record<string, number> = {
+  FIORE10: 10,
+  BEMVINDO15: 15,
+};
+const FRETE_FIXO = 24.9;
+const FRETE_GRATIS_ACIMA = 199;
+
 export class PedidoController {
   static async finalizar(req: Request, res: Response) {
     if (req.session.user?.tipo_usuario !== TipoUsuario.CLIENTE) {
       return res.status(403).json({ message: 'Somente clientes podem finalizar compras.' });
     }
 
-    const linhasRecebidas = req.body.itens;
+    const { itens: linhasRecebidas, cupom, cep } = req.body;
     if (!Array.isArray(linhasRecebidas) || linhasRecebidas.length === 0) {
       return res.status(400).json({ message: 'O carrinho está vazio.' });
+    }
+
+    let percentualDesconto = 0;
+    if (cupom && typeof cupom === 'string' && cupom.trim()) {
+      const codigoCupom = cupom.trim().toUpperCase();
+      if (!(codigoCupom in CUPONS_VALIDOS)) {
+        return res.status(400).json({ message: 'Cupom de desconto inválido ou expirado.' });
+      }
+      percentualDesconto = CUPONS_VALIDOS[codigoCupom];
+    }
+
+    let cepValido = false;
+    if (cep && typeof cep === 'string' && cep.trim()) {
+      const cepLimpo = cep.replace(/\D/g, '');
+      if (cepLimpo.length !== 8) {
+        return res.status(400).json({ message: 'CEP inválido. O CEP deve conter 8 dígitos numéricos.' });
+      }
+      cepValido = true;
     }
 
     const quantidades = new Map<number, number>();
@@ -35,7 +60,7 @@ export class PedidoController {
         });
         if (produtos.length !== quantidades.size) throw new Error('PRODUTO_NAO_ENCONTRADO');
 
-        let totalCentavos = 0;
+        let totalItensCentavos = 0;
         for (const produto of produtos) {
           const quantidade = quantidades.get(produto.id_produto)!;
           const atualizacaoEstoque = await tx.produto.updateMany({
@@ -46,13 +71,25 @@ export class PedidoController {
             data: { quantidade_estoque: { decrement: quantidade } },
           });
           if (atualizacaoEstoque.count !== 1) throw new Error(`ESTOQUE_INSUFICIENTE:${produto.nome}`);
-          totalCentavos += Math.round(Number(produto.preco) * 100) * quantidade;
+          totalItensCentavos += Math.round(Number(produto.preco) * 100) * quantidade;
         }
+
+        const descontoCentavos =
+          percentualDesconto > 0
+            ? Math.round((totalItensCentavos * percentualDesconto) / 100)
+            : 0;
+        const subtotalComDescontoCentavos = totalItensCentavos - descontoCentavos;
+        const subtotalComDescontoReais = subtotalComDescontoCentavos / 100;
+
+        const freteGratis = subtotalComDescontoReais > FRETE_GRATIS_ACIMA;
+        const freteCentavos = !freteGratis && cepValido ? Math.round(FRETE_FIXO * 100) : 0;
+
+        const valorTotalFinal = (subtotalComDescontoCentavos + freteCentavos) / 100;
 
         return tx.pedido.create({
           data: {
             id_cliente: req.session.user!.id_usuario,
-            valor_total: totalCentavos / 100,
+            valor_total: valorTotalFinal,
             itens: {
               create: produtos.map((produto) => ({
                 id_produto: produto.id_produto,
