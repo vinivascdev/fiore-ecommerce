@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { formatImageUrl } from '../../utils/image';
+import { API_URL } from '../../config/api';
 
 export const AdminProdutos: React.FC = () => {
   const [produtos, setProdutos] = useState<any[]>([]);
@@ -25,8 +26,8 @@ export const AdminProdutos: React.FC = () => {
   const carregarDados = async () => {
     try {
       const [resProd, resCat] = await Promise.all([
-        fetch('http://localhost:3333/api/admin/produtos', { credentials: 'include' }),
-        fetch('http://localhost:3333/api/admin/categorias', { credentials: 'include' }),
+        fetch(`${API_URL}/api/admin/produtos`, { credentials: 'include' }),
+        fetch(`${API_URL}/api/admin/categorias`, { credentials: 'include' }),
       ]);
       if (resProd.ok) setProdutos(await resProd.json());
       if (resCat.ok) setCategorias(await resCat.json());
@@ -76,7 +77,7 @@ export const AdminProdutos: React.FC = () => {
       const formData = new FormData();
       formData.append('foto', file);
 
-      const res = await fetch('http://localhost:3333/api/admin/upload', {
+      const res = await fetch(`${API_URL}/api/admin/upload`, {
         method: 'POST',
         credentials: 'include',
         body: formData,
@@ -106,8 +107,8 @@ export const AdminProdutos: React.FC = () => {
   const salvarProduto = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editando
-      ? `http://localhost:3333/api/admin/produtos/${editando.id_produto}`
-      : 'http://localhost:3333/api/admin/produtos';
+      ? `${API_URL}/api/admin/produtos/${editando.id_produto}`
+      : `${API_URL}/api/admin/produtos`;
     const method = editando ? 'PUT' : 'POST';
 
     try {
@@ -133,7 +134,7 @@ export const AdminProdutos: React.FC = () => {
   const excluirProduto = async (id: number) => {
     if (!confirm('Deseja realmente excluir este produto?')) return;
     try {
-      const res = await fetch(`http://localhost:3333/api/admin/produtos/${id}`, {
+      const res = await fetch(`${API_URL}/api/admin/produtos/${id}`, {
         method: 'DELETE',
         credentials: 'include',
       });

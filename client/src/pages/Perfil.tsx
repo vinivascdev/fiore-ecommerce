@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { formatImageUrl } from '../utils/image';
+import { API_URL } from '../config/api';
 
 interface DadosPerfil {
   nome: string;
@@ -123,7 +124,7 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
   useEffect(() => {
     async function carregarPerfil() {
       try {
-        const resposta = await fetch('http://localhost:3333/api/usuarios/me', {
+        const resposta = await fetch(`${API_URL}/api/usuarios/me`, {
           credentials: 'include',
         });
 
@@ -156,7 +157,7 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
     let ativo = true;
     setCarregandoPedidos(true);
     setErroPedidos('');
-    fetch('http://localhost:3333/api/pedidos/me', { credentials: 'include' })
+    fetch(`${API_URL}/api/pedidos/me`, { credentials: 'include' })
       .then(async (resposta) => {
         const resultado = await resposta.json().catch(() => []);
         if (!resposta.ok) throw new Error(resultado.message || 'Não foi possível carregar seus pedidos.');
@@ -207,7 +208,7 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
         nomeCompleto: `${dados.nome} ${dados.sobrenome}`.trim(),
       };
 
-      const resposta = await fetch('http://localhost:3333/api/usuarios/me', {
+      const resposta = await fetch(`${API_URL}/api/usuarios/me`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -260,7 +261,7 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
 
     try {
       const resposta = await fetch(
-        'http://localhost:3333/api/usuarios/me/senha',
+        `${API_URL}/api/usuarios/me/senha`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -303,7 +304,7 @@ export function Perfil({ modoAdmin = false }: PerfilProps) {
     setExcluindo(true);
 
     try {
-      const resposta = await fetch('http://localhost:3333/api/usuarios/me', {
+      const resposta = await fetch(`${API_URL}/api/usuarios/me`, {
         method: 'DELETE',
         credentials: 'include',
       });

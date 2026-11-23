@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { API_URL } from '../../config/api';
 
 export const AdminUsuarios: React.FC = () => {
   const { user: usuarioLogado } = useAuth();
@@ -7,7 +8,7 @@ export const AdminUsuarios: React.FC = () => {
   const [busca, setBusca] = useState('');
 
   const carregar = async () => {
-    const res = await fetch('http://localhost:3333/api/admin/usuarios', { credentials: 'include' });
+    const res = await fetch(`${API_URL}/api/admin/usuarios`, { credentials: 'include' });
     if (res.ok) setUsuarios(await res.json());
   };
 
@@ -16,7 +17,7 @@ export const AdminUsuarios: React.FC = () => {
   }, []);
 
   const alterarRole = async (id: number, novoTipo: 'CLIENTE' | 'ADMIN') => {
-    const res = await fetch(`http://localhost:3333/api/admin/usuarios/${id}/role`, {
+    const res = await fetch(`${API_URL}/api/admin/usuarios/${id}/role`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -33,7 +34,7 @@ export const AdminUsuarios: React.FC = () => {
 
   const excluirUsuario = async (id: number) => {
     if (!confirm('Deseja realmente excluir este usuário?')) return;
-    const res = await fetch(`http://localhost:3333/api/admin/usuarios/${id}`, {
+    const res = await fetch(`${API_URL}/api/admin/usuarios/${id}`, {
       method: 'DELETE',
       credentials: 'include',
     });

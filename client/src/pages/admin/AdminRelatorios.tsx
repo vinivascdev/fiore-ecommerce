@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../../config/api';
 
 type TipoRelatorio = 'compras-por-cliente' | 'receita-por-dia' | 'produtos-em-falta';
 
@@ -26,7 +27,7 @@ export const AdminRelatorios: React.FC = () => {
     setErro('');
     setCarregando(true);
 
-    fetch(`http://localhost:3333/api/admin/relatorios?${params}`, {
+    fetch(`${API_URL}/api/admin/relatorios?${params}`, {
       credentials: 'include',
       signal: controller.signal,
     })

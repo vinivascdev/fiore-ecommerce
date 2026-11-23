@@ -1,3 +1,5 @@
+import { API_URL } from '../config/api';
+
 export function formatImageUrl(url?: string | null): string {
   if (!url || !url.trim()) {
     return 'https://via.placeholder.com/300?text=Fiore+Perfumes';
@@ -6,5 +8,5 @@ export function formatImageUrl(url?: string | null): string {
   if (limpa.startsWith('http://') || limpa.startsWith('https://') || limpa.startsWith('data:')) {
     return limpa;
   }
-  return `http://localhost:3333${limpa.startsWith('/') ? '' : '/'}${limpa}`;
+  return `${API_URL}${limpa.startsWith('/') ? '' : '/'}${limpa}`;
 }

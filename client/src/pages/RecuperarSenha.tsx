@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_URL } from '../config/api';
 
 const inputClass =
   'w-full h-[50px] px-4 bg-[#F2F2F2] border border-stone-200 rounded-md text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[#DD0088] focus:ring-2 focus:ring-[#DD0088]/20';
@@ -23,7 +24,7 @@ export const RecuperarSenha: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3333/api/auth/forgot-password', {
+      const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -63,7 +64,7 @@ export const RecuperarSenha: React.FC = () => {
 
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3333/api/auth/reset-password', {
+      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, novaSenha }),

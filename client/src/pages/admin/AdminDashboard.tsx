@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { API_URL } from '../../config/api';
 
 export const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -8,7 +9,7 @@ export const AdminDashboard: React.FC = () => {
   const [erro, setErro] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:3333/api/admin/dashboard', { credentials: 'include' })
+    fetch(`${API_URL}/api/admin/dashboard`, { credentials: 'include' })
       .then(async (r) => {
         if (!r.ok) {
           const err = await r.json().catch(() => ({}));

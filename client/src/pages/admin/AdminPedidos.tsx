@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../../config/api';
 
 export const AdminPedidos: React.FC = () => {
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [busca, setBusca] = useState('');
 
   const carregar = async () => {
-    const res = await fetch('http://localhost:3333/api/admin/pedidos', { credentials: 'include' });
+    const res = await fetch(`${API_URL}/api/admin/pedidos`, { credentials: 'include' });
     setPedidos(await res.json());
   };
 
@@ -16,7 +17,7 @@ export const AdminPedidos: React.FC = () => {
 
   const excluirPedido = async (id: number) => {
     if (!confirm(`Deseja realmente excluir o pedido #${id}?`)) return;
-    const res = await fetch(`http://localhost:3333/api/admin/pedidos/${id}`, {
+    const res = await fetch(`${API_URL}/api/admin/pedidos/${id}`, {
       method: 'DELETE',
       credentials: 'include',
     });

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { API_URL } from '../config/api';
 
 export type TipoUsuario = 'CLIENTE' | 'ADMIN';
 
@@ -23,7 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3333/api/auth/me', { credentials: 'include' })
+    fetch(`${API_URL}/api/auth/me`, { credentials: 'include' })
       .then((res) => res.json())
       .then((data) => {
         if (data.authenticated) {
@@ -36,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, senha: string): Promise<UserSession> => {
     try {
-      const response = await fetch('http://localhost:3333/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha }),
@@ -59,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   
   const logout = async () => {
-    await fetch('http://localhost:3333/api/auth/logout', {
+    await fetch(`${API_URL}/api/auth/logout`, {
       method: 'POST',
       credentials: 'include',
     });

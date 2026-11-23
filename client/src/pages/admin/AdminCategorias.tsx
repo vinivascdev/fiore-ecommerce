@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../../config/api';
 
 export const AdminCategorias: React.FC = () => {
   const [categorias, setCategorias] = useState<any[]>([]);
@@ -8,7 +9,7 @@ export const AdminCategorias: React.FC = () => {
   const [nome, setNome] = useState('');
 
   const carregar = async () => {
-    const res = await fetch('http://localhost:3333/api/admin/categorias', { credentials: 'include' });
+    const res = await fetch(`${API_URL}/api/admin/categorias`, { credentials: 'include' });
     setCategorias(await res.json());
   };
 
@@ -25,8 +26,8 @@ export const AdminCategorias: React.FC = () => {
   const salvar = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editando
-      ? `http://localhost:3333/api/admin/categorias/${editando.id_categoria}`
-      : 'http://localhost:3333/api/admin/categorias';
+      ? `${API_URL}/api/admin/categorias/${editando.id_categoria}`
+      : `${API_URL}/api/admin/categorias`;
 
     const res = await fetch(url, {
       method: editando ? 'PUT' : 'POST',
@@ -46,7 +47,7 @@ export const AdminCategorias: React.FC = () => {
 
   const excluir = async (id: number) => {
     if (!confirm('Deseja excluir esta categoria?')) return;
-    const res = await fetch(`http://localhost:3333/api/admin/categorias/${id}`, {
+    const res = await fetch(`${API_URL}/api/admin/categorias/${id}`, {
       method: 'DELETE',
       credentials: 'include',
     });

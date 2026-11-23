@@ -289,7 +289,12 @@ export class UsuarioController {
           });
         }
 
-        res.clearCookie("connect.sid");
+        const isProduction = process.env.NODE_ENV === 'production';
+        res.clearCookie("connect.sid", {
+          httpOnly: true,
+          secure: isProduction,
+          sameSite: isProduction ? 'none' : 'lax',
+        });
         return res.status(200).json({
           mensagem: "Conta excluída com sucesso.",
         });

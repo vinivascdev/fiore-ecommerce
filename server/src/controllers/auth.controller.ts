@@ -171,7 +171,12 @@ export class AuthController {
       if (err) {
         return res.status(500).json({ message: 'Erro ao encerrar a sessão.' });
       }
-      res.clearCookie('connect.sid');
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.clearCookie('connect.sid', {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+      });
       return res.json({ message: 'Logout realizado com sucesso.' });
     });
   }

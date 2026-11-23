@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useCarrinho } from "../context/CarrinhoContext";
 import { formatImageUrl } from "../utils/image";
+import { API_URL } from "../config/api";
 
 const FRETE_FIXO = 24.9;
 const FRETE_GRATIS_ACIMA = 199;
@@ -66,7 +67,7 @@ export function Carrinho() {
 
     setFinalizando(true);
     try {
-      const resposta = await fetch("http://localhost:3333/api/pedidos", {
+      const resposta = await fetch(`${API_URL}/api/pedidos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

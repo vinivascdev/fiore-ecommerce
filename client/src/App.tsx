@@ -9,6 +9,7 @@ import { Header } from "./components/Header";
 import { Perfil } from "./pages/Perfil";
 import { useEffect, useRef, useState } from "react";
 import { formatImageUrl } from "./utils/image";
+import { API_URL } from "./config/api";
 
 // Telas do Painel Administrativo
 import { AdminLayout } from "./pages/admin/AdminLayout";
@@ -47,7 +48,7 @@ function HomePage() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3333/api/produtos")
+    fetch(`${API_URL}/api/produtos`)
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) setProdutos(data);

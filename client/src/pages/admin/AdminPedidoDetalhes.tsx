@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { API_URL } from '../../config/api';
 
 export const AdminPedidoDetalhes: React.FC = () => {
   const { id } = useParams();
   const [pedido, setPedido] = useState<any>(null);
 
   const carregar = async () => {
-    const res = await fetch(`http://localhost:3333/api/admin/pedidos/${id}`, {
+    const res = await fetch(`${API_URL}/api/admin/pedidos/${id}`, {
       credentials: 'include',
     });
     if (res.ok) setPedido(await res.json());
@@ -17,7 +18,7 @@ export const AdminPedidoDetalhes: React.FC = () => {
   }, [id]);
 
   const marcarComoEnviado = async () => {
-    await fetch(`http://localhost:3333/api/admin/pedidos/${id}/status`, {
+    await fetch(`${API_URL}/api/admin/pedidos/${id}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

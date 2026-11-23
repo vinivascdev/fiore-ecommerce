@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_URL } from '../config/api';
 
 const inputClass =
   'w-full h-[50px] px-4 bg-[#F2F2F2] border border-stone-200 rounded-md text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[#DD0088] focus:ring-2 focus:ring-[#DD0088]/20';
@@ -83,7 +84,7 @@ export const Register: React.FC = () => {
         endereco: enderecoLimpo,
       };
 
-      const res = await fetch('http://localhost:3333/api/auth/register', {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
