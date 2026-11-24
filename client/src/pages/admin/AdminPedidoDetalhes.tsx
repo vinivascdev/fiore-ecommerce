@@ -29,6 +29,53 @@ export const AdminPedidoDetalhes: React.FC = () => {
 
   if (!pedido) return <p className="text-sm text-stone-500">Carregando detalhes do pedido...</p>;
 
+  // Cálculo real dos itens
+  const subtotalItensCentavos = (pedido.itens || []).reduce(
+    (acc: number, item: any) =>
+      acc + Math.round(Number(item.preco_unitario) * 100) * Number(item.quantidade),
+    0
+  );
+  const subtotalItens = subtotalItensCentavos / 100;
+  const valorTotalCentavos = Math.round(Number(pedido.valor_total || 0) * 100);
+  const valorTotal = valorTotalCentavos / 100;
+
+  // Detecção consistente de desconto de cupons (15% ou 10%) e frete
+  let descontoCentavos = 0;
+  let freteCentavos = 0;
+  let matchedCoupon = false;
+
+  for (const taxa of [0.15, 0.1]) {
+    const desc = Math.round(subtotalItensCentavos * taxa);
+    if (subtotalItensCentavos - desc === valorTotalCentavos) {
+      descontoCentavos = desc;
+      freteCentavos = 0;
+      matchedCoupon = true;
+      break;
+    }
+    if (subtotalItensCentavos - desc + 2490 === valorTotalCentavos) {
+      descontoCentavos = desc;
+      freteCentavos = 2490;
+      matchedCoupon = true;
+      break;
+    }
+  }
+
+  if (!matchedCoupon) {
+    if (valorTotalCentavos > subtotalItensCentavos) {
+      freteCentavos = valorTotalCentavos - subtotalItensCentavos;
+      descontoCentavos = 0;
+    } else if (valorTotalCentavos < subtotalItensCentavos) {
+      descontoCentavos = subtotalItensCentavos - valorTotalCentavos;
+      freteCentavos = 0;
+    } else {
+      freteCentavos = 0;
+      descontoCentavos = 0;
+    }
+  }
+
+  const desconto = descontoCentavos / 100;
+  const frete = freteCentavos / 100;
+
   return (
     <div className="max-w-5xl space-y-6">
       <Link to="/admin/pedidos" className="text-xs font-semibold text-[#DD0088] hover:underline print:hidden">
@@ -93,21 +140,40 @@ export const AdminPedidoDetalhes: React.FC = () => {
             <div className="border-t border-stone-200 mt-4 pt-4 space-y-2 text-xs">
               <div className="flex justify-between">
                 <span className="text-stone-500">Subtotal</span>
-                <span className="font-semibold">
-                  {Number(pedido.valor_total).toLocaleString('pt-BR', {
+                <span className="font-semibold text-stone-900">
+                  {subtotalItens.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
                   })}
                 </span>
               </div>
+              {desconto > 0 && (
+                <div className="flex justify-between text-emerald-600 font-semibold">
+                  <span>Desconto</span>
+                  <span>
+                    -{' '}
+                    {desconto.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-stone-500">Frete</span>
-                <span className="font-semibold text-[#DD0088]">Grátis</span>
+                <span className={`font-semibold ${frete > 0 ? 'text-stone-900' : 'text-[#DD0088]'}`}>
+                  {frete > 0
+                    ? frete.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })
+                    : 'Grátis'}
+                </span>
               </div>
-              <div className="flex justify-between text-sm font-bold pt-2 border-t">
+              <div className="flex justify-between text-sm font-bold pt-2 border-t border-stone-100">
                 <span>Total</span>
                 <span className="text-[#DD0088]">
-                  {Number(pedido.valor_total).toLocaleString('pt-BR', {
+                  {valorTotal.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
                   })}

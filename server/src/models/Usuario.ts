@@ -4,7 +4,7 @@ export class Usuario {
   private _id_usuario?: number;
   private _nome: string;
   private _email: string;
-  private _login: string;
+  private _telefone?: string | null;
   private _senha: string;
   private _endereco: string;
   private _tipo_usuario: TipoUsuario;
@@ -12,19 +12,19 @@ export class Usuario {
   constructor(
     nome: string,
     email: string,
-    login: string,
     senha: string,
     endereco: string,
     tipo_usuario: TipoUsuario = TipoUsuario.CLIENTE,
-    id_usuario?: number
+    id_usuario?: number,
+    telefone?: string | null
   ) {
     this._nome = nome;
     this._email = email;
-    this._login = login;
     this._senha = senha;
     this._endereco = endereco;
     this._tipo_usuario = tipo_usuario;
     this._id_usuario = id_usuario;
+    this._telefone = telefone;
   }
 
   // Getters & Setters
@@ -52,12 +52,12 @@ export class Usuario {
     this._email = value;
   }
 
-  public get login(): string {
-    return this._login;
+  public get telefone(): string | null | undefined {
+    return this._telefone;
   }
 
-  public set login(value: string) {
-    this._login = value;
+  public set telefone(value: string | null | undefined) {
+    this._telefone = value;
   }
 
   public get senha(): string {
@@ -92,7 +92,7 @@ export class Usuario {
       ...(this._id_usuario !== undefined && { id_usuario: this._id_usuario }),
       nome: this._nome,
       email: this._email,
-      login: this._login,
+      telefone: this._telefone ?? null,
       senha: this._senha,
       endereco: this._endereco,
       tipo_usuario: this._tipo_usuario,
@@ -107,7 +107,7 @@ export class Usuario {
       id_usuario: this._id_usuario,
       nome: this._nome,
       email: this._email,
-      login: this._login,
+      telefone: this._telefone ?? null,
       endereco: this._endereco,
       tipo_usuario: this._tipo_usuario,
     };
@@ -120,7 +120,7 @@ export class Usuario {
     id_usuario?: number;
     nome: string;
     email: string;
-    login: string;
+    telefone?: string | null;
     senha: string;
     endereco: string;
     tipo_usuario: TipoUsuario | string;
@@ -128,11 +128,11 @@ export class Usuario {
     return new Usuario(
       data.nome,
       data.email,
-      data.login,
       data.senha,
       data.endereco,
       data.tipo_usuario as TipoUsuario,
-      data.id_usuario
+      data.id_usuario,
+      data.telefone
     );
   }
 }

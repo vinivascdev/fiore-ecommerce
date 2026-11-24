@@ -5,6 +5,8 @@ import { GuestRoute } from "./components/GuestRoute";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { RecuperarSenha } from "./pages/RecuperarSenha";
+import { Termos } from "./pages/Termos";
+import { Privacidade } from "./pages/Privacidade";
 import { Header } from "./components/Header";
 import { Perfil } from "./pages/Perfil";
 import { useEffect, useRef, useState } from "react";
@@ -308,6 +310,8 @@ export default function App() {
                     <Routes>
                       <Route path="/" element={<HomePage />} />
                       <Route path="/carrinho" element={<Carrinho />} />
+                      <Route path="/termos" element={<Termos />} />
+                      <Route path="/privacidade" element={<Privacidade />} />
 
                       <Route
                         path="/login"
