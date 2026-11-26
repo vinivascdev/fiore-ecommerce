@@ -93,9 +93,18 @@ export class AuthController {
         tipo_usuario: usuario.tipo_usuario,
       };
 
-      return res.json({
-        message: 'Login realizado com sucesso!',
-        user: req.session.user,
+      return req.session.save((err) => {
+        if (err) {
+          console.error('Erro ao salvar sessão:', err);
+          return res.status(500).json({
+            message: 'Erro interno no servidor ao tentar realizar login.',
+          });
+        }
+
+        return res.json({
+          message: 'Login realizado com sucesso!',
+          user: req.session.user,
+        });
       });
     } catch (error) {
       console.error('Erro no login:', error);

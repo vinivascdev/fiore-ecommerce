@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import path from 'path';
 import fs from 'fs';
 import { authRoutes } from './routes/auth.routes';
@@ -33,8 +34,17 @@ app.use(express.json());
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+const PgSession = connectPgSimple(session);
+const sessionStore = process.env.DATABASE_URL
+  ? new PgSession({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+    })
+  : undefined;
+
 app.use(
   session({
+    store: sessionStore,
     secret: process.env.SESSION_SECRET || 'fiore_perfumes_secreto_super_seguro',
     resave: false,
     saveUninitialized: false,
